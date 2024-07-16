@@ -1,4 +1,4 @@
 {
     "workbench.iconTheme": "material-icon-theme",
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
 }

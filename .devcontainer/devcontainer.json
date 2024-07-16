@@ -14,7 +14,8 @@
 				// for ex: "hashicorp.terraform"
 				"vscjava.vscode-java-pack",
 				"redhat.vscode-xml",
-				"PKief.material-icon-theme"
+				"PKief.material-icon-theme",
+				"vmware.vscode-boot-dev-pack"
 			]
 		}
 	}
