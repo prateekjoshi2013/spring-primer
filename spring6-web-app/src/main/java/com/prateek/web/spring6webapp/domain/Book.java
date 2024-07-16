@@ -1,5 +1,6 @@
 package com.prateek.web.spring6webapp.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ public class Book {
 
     @ManyToMany
     @JoinTable(name = "author_book", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private Set<Author> authors;
+    private Set<Author> authors = new HashSet<>();
 
     public long getId() {
         return id;
@@ -47,8 +48,6 @@ public class Book {
             return false;
         return true;
     }
-
-    
 
     @Override
     public String toString() {
