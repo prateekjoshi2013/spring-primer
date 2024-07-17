@@ -1,6 +1,7 @@
 package com.prateek.spring.springdi.domain;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
  * - Naming the bean fieldInjectedComponent so it can be used as Qualifier
  * while autowiring
  */
+@Profile({ "test", "qa" })
 @Component("fieldInjectedComponent")
 public class FieldInjected implements MyComponentInterface {
 

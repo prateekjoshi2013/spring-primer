@@ -2,10 +2,9 @@ package com.prateek.spring.springdi.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 
-import com.prateek.spring.springdi.domain.FieldInjected;
 import com.prateek.spring.springdi.domain.MyComponentInterface;
 
 /**
@@ -19,9 +18,10 @@ import com.prateek.spring.springdi.domain.MyComponentInterface;
  * - It is typically used in combination with annotated handler methods based on
  * the @RequestMapping
  */
+@Profile({ "test", "qa" })
 @Controller
 public class FieldInjectedController {
-    
+
     @Qualifier("fieldInjectedComponent")
     @Autowired
     private MyComponentInterface myFieldInjectedComponent;

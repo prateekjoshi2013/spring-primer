@@ -1,5 +1,6 @@
 package com.prateek.spring.springdi.domain;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  * - A component may optionally specify a logical component name via the value
  * attribute of this annotation.
  */
+@Profile("staging")
 @Component
 public class SetterInjected implements MyComponentInterface {
 

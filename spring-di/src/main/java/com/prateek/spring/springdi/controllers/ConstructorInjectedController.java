@@ -1,10 +1,12 @@
 package com.prateek.spring.springdi.controllers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 
 import com.prateek.spring.springdi.domain.MyComponentInterface;
 
+@Profile("default")
 @Controller
 public class ConstructorInjectedController {
     // declare private final as it is initialized from constructor
