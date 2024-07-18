@@ -35,7 +35,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -50,8 +49,11 @@
 
 	<build>
 		<plugins>
-			<!-- Plugin config to delobok lombok annotated classes to see generated code -->
-			<plugin>
+			<!-- 
+				- Plugin config to delobok lombok annotated classes to see generated code 
+				- This plugin generates the java files in generated source which causes issues
+			 -->
+			<!-- <plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
 				<version>1.18.20.0</version>
@@ -67,7 +69,7 @@
 					<sourceDirectory>src/main/java</sourceDirectory>
 					<outputDirectory>target/delomboked</outputDirectory>
 				</configuration>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
