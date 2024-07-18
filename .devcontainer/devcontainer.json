@@ -15,7 +15,8 @@
 				"vscjava.vscode-java-pack",
 				"redhat.vscode-xml",
 				"PKief.material-icon-theme",
-				"vmware.vscode-boot-dev-pack"
+				"vmware.vscode-boot-dev-pack",
+				"vscjava.vscode-lombok"
 			]
 		}
 	}
