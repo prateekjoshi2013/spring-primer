@@ -1,9 +1,11 @@
 package com.prateek.web.springrestdemo.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -22,6 +24,7 @@ import java.util.stream.Stream;
 import javax.print.attribute.standard.Media;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -87,6 +90,21 @@ public class BeerControllerTest {
     @SneakyThrows
     void testCreateNewBearJsonString() {
         System.out.println(objectMapper.writeValueAsString(mockedBeers.get(0)));
+    }
+
+    @SneakyThrows
+    @Test
+    void testDeleteBeer() {
+        Beer beer = mockedBeers.get(0);
+
+        mockMvc.perform(
+                delete("/api/v1/beer/" + beer.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        ArgumentCaptor<UUID> argumentCaptorUUID = ArgumentCaptor.forClass(UUID.class);
+        verify(beerService).deletedById(argumentCaptorUUID.capture());
+        assertThat(beer.getId()).isEqualTo(argumentCaptorUUID.getValue());
     }
 
     @SneakyThrows

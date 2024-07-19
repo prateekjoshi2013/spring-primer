@@ -17,5 +17,6 @@
         "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
         "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
         "org.hamcrest.Matchers.*",
+        "org.assertj.core.api.Assertions.*"
     ],
 }
