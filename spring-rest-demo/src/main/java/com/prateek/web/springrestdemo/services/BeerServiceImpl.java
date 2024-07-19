@@ -26,7 +26,7 @@ public class BeerServiceImpl implements BeerService {
                                         .beerStyle(BeerStyle.PALE_ALE)
                                         .quantityOnHand(12)
                                         .upc("upc")
-                                        .version(1)
+                                        .version(2)
                                         .createdDate(LocalDateTime.now())
                                         .updateDate(LocalDateTime.now())
                                         .build(),

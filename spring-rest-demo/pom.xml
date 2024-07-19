@@ -45,6 +45,19 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- enables live reloading  -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<!-- 
+				By marking this dependency as optional, you ensure that spring-boot-devtools 
+				- is only included during development and not in the final production build 
+				- or in the transitive dependencies of any downstream projects. 
+				- This approach helps to maintain a clear separation between development and production
+			environments 
+			-->
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 	<build>

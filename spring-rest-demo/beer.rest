@@ -8,4 +8,4 @@ GET http://localhost:8080/api/v1/beer/4e518e03-d7b7-40a5-a2bc-11b1bd69b214
 GET http://localhost:8080/api/v1/customer
 
 ###
-GET http://localhost:8080/api/v1/customer/e1c77c28-945c-4d8b-983c-531b545aaa20
+GET http://localhost:8080/api/v1/customer/58ea5d98-c18e-41c9-8ce5-b3cd4f5add01
