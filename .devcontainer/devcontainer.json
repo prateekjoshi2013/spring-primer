@@ -7,6 +7,7 @@
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"postStartCommand": "git config --global --add safe.directory /workspaces/${localWorkspaceFolderBasename}",
 	"customizations": {
+		"extensions.verifySignature": false,
 		"vscode": {
 			"extensions": [
 				// add extensions you want installed in dev env
@@ -16,7 +17,8 @@
 				"redhat.vscode-xml",
 				"PKief.material-icon-theme",
 				"vmware.vscode-boot-dev-pack",
-				"vscjava.vscode-lombok"
+				"vscjava.vscode-lombok",
+				"humao.rest-client"
 			]
 		}
 	}
