@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prateek.web.springrestdemo.model.Beer;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.services.BeerService;
@@ -33,6 +34,9 @@ public class BeerControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @MockBean
     BeerService beerService;
@@ -72,6 +76,12 @@ public class BeerControllerTest {
                     .updateDate(LocalDateTime.now())
                     .build())
             .collect(Collectors.toList());
+
+    @Test
+    @SneakyThrows
+    void testCreateNewBearJsonString() {
+        System.out.println(objectMapper.writeValueAsString(mockedBeers.get(0)));
+    }
 
     @SneakyThrows
     @Test
