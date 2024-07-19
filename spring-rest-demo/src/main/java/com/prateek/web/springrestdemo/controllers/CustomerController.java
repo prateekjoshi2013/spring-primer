@@ -34,7 +34,7 @@ public class CustomerController {
         return this.customerServiceImpl.listCustomers();
     }
 
-    @GetMapping(CUSTOMER_ID)
+    @GetMapping(API_V1_CUSTOMER_PATH_ID)
     public Customer getCustomerById(@PathVariable("customerId") UUID customerId) {
         return this.customerServiceImpl.getCustomerById(customerId);
     }

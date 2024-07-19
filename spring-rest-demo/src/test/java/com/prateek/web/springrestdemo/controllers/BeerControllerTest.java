@@ -168,7 +168,7 @@ public class BeerControllerTest {
         given(beerService.getBeerById(any(UUID.class))).willReturn(beer);
 
         // Act
-        mockMvc.perform(get(BeerController.API_V1_BEER,beer.getId())
+        mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH,beer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())

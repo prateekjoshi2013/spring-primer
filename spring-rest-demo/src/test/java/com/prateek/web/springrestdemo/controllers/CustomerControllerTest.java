@@ -1,30 +1,163 @@
 package com.prateek.web.springrestdemo.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prateek.web.springrestdemo.model.Beer;
 import com.prateek.web.springrestdemo.model.Customer;
+import com.prateek.web.springrestdemo.services.CustomerService;
 
-@SpringBootTest
+import lombok.SneakyThrows;
+
+@WebMvcTest(CustomerController.class)
 public class CustomerControllerTest {
+
+    @MockBean
+    private CustomerService customerService;
+
     @Autowired
-    private CustomerController customerController;
+    private ObjectMapper objectMapper;
 
-    @Test
-    void testGetCustomerById() {
-        UUID customerId = this.customerController.listCustomers().get(0).getId();
-        Customer customer = this.customerController.getCustomerById(customerId);
-        assertEquals(customerId, customer.getId());
-    }
+    @Autowired
+    MockMvc mockMvc;
 
+    private List<Customer> mockedCustomers = Stream.of(
+            Customer.builder()
+                    .version(1)
+                    .id(UUID.randomUUID())
+                    .customerName("John")
+                    .createdDate(LocalDateTime.now())
+                    .lastModifiedDate(LocalDateTime.now())
+                    .build(),
+            Customer.builder()
+                    .version(2)
+                    .id(UUID.randomUUID())
+                    .customerName("Jane")
+                    .createdDate(LocalDateTime.now())
+                    .lastModifiedDate(LocalDateTime.now())
+                    .build(),
+            Customer.builder()
+                    .version(3)
+                    .id(UUID.randomUUID())
+                    .customerName("Kane")
+                    .createdDate(LocalDateTime.now())
+                    .lastModifiedDate(LocalDateTime.now())
+                    .build())
+            .collect(Collectors.toList());
+
+    @SneakyThrows
     @Test
     void testListCustomers() {
-        int size = this.customerController.listCustomers().size();
-        assertEquals(size, 3);
+        given(customerService.listCustomers()).willReturn(mockedCustomers);
+
+        mockMvc.perform(get(CustomerController.API_V1_CUSTOMER)
+                .accept(MediaType.APPLICATION_JSON))
+                // Assert
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // jsonpath documentation : https://github.com/json-path/JsonPath
+                .andExpect(jsonPath("$.length()", is(3)));
+    }
+
+    @SneakyThrows
+    @Test
+    void testGetCustomerById() {
+        // Get Mocked Beer
+        Customer customer = mockedCustomers.get(0);
+        // Set up behaviours and mocks
+        given(customerService.getCustomerById(any(UUID.class))).willReturn(customer);
+
+        // Act
+        mockMvc.perform(get(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                // Assert
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // jsonpath documentation : https://github.com/json-path/JsonPath
+                .andExpect(jsonPath("$.id", is(customer.getId().toString())))
+                .andExpect(jsonPath("$.customerName", is(customer.getCustomerName())));
+
+    }
+
+    @SneakyThrows
+    @Test
+    void testCreateBeer() {
+
+        given(customerService.saveCustomer(any(Customer.class))).willReturn(mockedCustomers.get(1));
+
+        mockMvc.perform(
+                post(CustomerController.API_V1_CUSTOMER)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockedCustomers.get(1)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("location"));
+
+    }
+
+    @SneakyThrows
+    @Test
+    void testUpdateBeer() {
+        // set up mock
+        Customer customer = mockedCustomers.get(0);
+
+        // set up behaviour
+        given(customerService.updateCustomerById(any(UUID.class), any(Customer.class))).willReturn(customer);
+
+        // act
+        mockMvc.perform(
+                put(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                // accept
+                .andExpect(status().isAccepted());
+
+        // verify
+        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+    }
+
+    @SneakyThrows
+    @Test
+    void testDeleteBeer() {
+        Customer customer = mockedCustomers.get(0);
+
+        mockMvc.perform(
+                delete(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        ArgumentCaptor<UUID> argumentCaptorUUID = ArgumentCaptor.forClass(UUID.class);
+        verify(customerService).deleteCustomerById(argumentCaptorUUID.capture());
+        assertThat(customer.getId()).isEqualTo(argumentCaptorUUID.getValue());
     }
 }
