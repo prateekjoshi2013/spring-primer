@@ -1,6 +1,8 @@
+### Beer
+
 GET http://localhost:8080/api/v1/beer
 
-###
+### 
 GET http://localhost:8080/api/v1/beer/0e5be93b-dd1a-4c2d-8817-b3ee35143eeb
 
 ###
@@ -34,7 +36,7 @@ content-type: application/json
     "price": 13.0
   }
 
-### 
+### CUSTOMER
 
 GET http://localhost:8080/api/v1/customer
 
@@ -58,3 +60,6 @@ content-type: application/json
  {
     "customerName": "Roman"
  }
+
+###
+DELETE http://localhost:8080/api/v1/customer/f537170f-65eb-47a7-ad63-fc8992d09969
