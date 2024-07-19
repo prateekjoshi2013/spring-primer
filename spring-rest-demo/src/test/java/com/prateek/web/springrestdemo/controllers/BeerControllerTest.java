@@ -4,7 +4,9 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,6 +83,22 @@ public class BeerControllerTest {
     @SneakyThrows
     void testCreateNewBearJsonString() {
         System.out.println(objectMapper.writeValueAsString(mockedBeers.get(0)));
+    }
+
+    @SneakyThrows
+    @Test
+    void testCreateBeer() {
+
+        given(beerService.saveNewBeer(any(Beer.class))).willReturn(mockedBeers.get(0));
+
+        mockMvc.perform(
+                post("/api/v1/beer")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockedBeers.get(1)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("location"));
+
     }
 
     @SneakyThrows
