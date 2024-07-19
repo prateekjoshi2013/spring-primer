@@ -97,4 +97,10 @@ public class BeerServiceImpl implements BeerService {
                 return savedbeer;
         }
 
+        @Override
+        public void deletedById(UUID beerId) {
+                log.info("deleteing object :{}", this.beerMap.get(beerId));
+                this.beerMap.remove(beerId);
+        }
+
 }

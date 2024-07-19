@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,12 @@ public class BeerController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("location", "/api/v1/beer/" + updatedBeer.getId());
         return new ResponseEntity<Beer>(updatedBeer, headers, HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/{beerId}")
+    public ResponseEntity<Object> deleteBearById(@PathVariable("beerId") UUID beerId) {
+        this.beerServiceImpl.deletedById(beerId);
+        return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
     }
 
 }
