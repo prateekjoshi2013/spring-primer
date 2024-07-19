@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 import com.prateek.web.springrestdemo.model.Beer;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class BeerServiceImpl implements BeerService {
 
     @Override
     public Beer getBeerById(UUID id) {
-        return Beer.builder()
+
+        Beer beer = Beer.builder()
                 .id(id)
                 .beerName("indian pale ale")
                 .price(BigDecimal.valueOf(12.023))
@@ -25,6 +29,8 @@ public class BeerServiceImpl implements BeerService {
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .build();
+        log.info("sending the beer object with id {}: {}", id, beer);
+        return beer;
     }
 
 }
