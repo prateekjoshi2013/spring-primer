@@ -9,21 +9,24 @@ import com.prateek.web.springrestdemo.services.BeerService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-@RestController
 @AllArgsConstructor
+@RestController
+@RequestMapping("/api/v1/beer")
 public class BeerController {
 
     private final BeerService beerServiceImpl;
 
-    
-    @RequestMapping("/api/v1/beer")
+    @RequestMapping("")
     public List<Beer> listBeers() {
         return beerServiceImpl.listBeers();
     }
 
-    public Beer getBeerById(UUID id) {
-        return beerServiceImpl.getBeerById(id);
+    @GetMapping("{beerId}")
+    public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
+        return beerServiceImpl.getBeerById(beerId);
     }
 
 }
