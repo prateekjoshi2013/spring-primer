@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RequestMapping("/api/v1/customer")
 @RestController
@@ -43,4 +44,11 @@ public class CustomerController {
         return new ResponseEntity<Customer>(savedCustomer, headers, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{customerId}")
+    public ResponseEntity<Customer> putMethodName(@PathVariable UUID customerId, @RequestBody Customer customer) {
+        Customer updatedCustomer = this.customerServiceImpl.updateCustomerById(customerId, customer);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("location", "/api/v1/customer" + updatedCustomer.getId());
+        return new ResponseEntity<Customer>(updatedCustomer, headers, HttpStatus.ACCEPTED);
+    }
 }
