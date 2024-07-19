@@ -16,40 +16,56 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class CustomerServiceImpl implements CustomerService {
-    private Map<UUID, Customer> customerMap = Stream.of(
-            Customer.builder()
-                    .version(1)
-                    .id(UUID.randomUUID())
-                    .customerName("John")
-                    .createdDate(LocalDateTime.now())
-                    .lastModifiedDate(LocalDateTime.now())
-                    .build(),
-            Customer.builder()
-                    .version(2)
-                    .id(UUID.randomUUID())
-                    .customerName("Jane")
-                    .createdDate(LocalDateTime.now())
-                    .lastModifiedDate(LocalDateTime.now())
-                    .build(),
-            Customer.builder()
-                    .version(3)
-                    .id(UUID.randomUUID())
-                    .customerName("Kane")
-                    .createdDate(LocalDateTime.now())
-                    .lastModifiedDate(LocalDateTime.now())
-                    .build())
-            .collect(Collectors.toMap(customer -> customer.getId(), customer -> customer));
+        private Map<UUID, Customer> customerMap = Stream.of(
+                        Customer.builder()
+                                        .version(1)
+                                        .id(UUID.randomUUID())
+                                        .customerName("John")
+                                        .createdDate(LocalDateTime.now())
+                                        .lastModifiedDate(LocalDateTime.now())
+                                        .build(),
+                        Customer.builder()
+                                        .version(2)
+                                        .id(UUID.randomUUID())
+                                        .customerName("Jane")
+                                        .createdDate(LocalDateTime.now())
+                                        .lastModifiedDate(LocalDateTime.now())
+                                        .build(),
+                        Customer.builder()
+                                        .version(3)
+                                        .id(UUID.randomUUID())
+                                        .customerName("Kane")
+                                        .createdDate(LocalDateTime.now())
+                                        .lastModifiedDate(LocalDateTime.now())
+                                        .build())
+                        .collect(Collectors.toMap(customer -> customer.getId(), customer -> customer));
 
-    @Override
-    public Customer getCustomerById(UUID customerId) {
-        Customer customer = this.customerMap.get(customerId);
-        log.info("Sending customer {}:{}", customerId, customer);
-        return customer;
-    }
+        @Override
+        public Customer getCustomerById(UUID customerId) {
+                Customer customer = this.customerMap.get(customerId);
+                log.info("Sending customer {}:{}", customerId, customer);
+                return customer;
+        }
 
-    @Override
-    public List<Customer> listCustomers() {
-        log.info("Sending list of customers");
-        return this.customerMap.values().stream().collect(Collectors.toList());
-    }
+        @Override
+        public List<Customer> listCustomers() {
+                log.info("Sending list of customers");
+                return this.customerMap.values().stream().collect(Collectors.toList());
+        }
+
+        @Override
+        public Customer saveCustomer(Customer customer) {
+                Customer savedCustomer = Customer
+                                .builder()
+                                .version(customer.getVersion())
+                                .id(UUID.randomUUID())
+                                .customerName(customer.getCustomerName())
+                                .createdDate(LocalDateTime.now())
+                                .lastModifiedDate(LocalDateTime.now())
+                                .build();
+                this.customerMap.put(savedCustomer.getId(), savedCustomer);
+                log.info("saved customer {}", customer);
+                return savedCustomer;
+        }
+
 }
