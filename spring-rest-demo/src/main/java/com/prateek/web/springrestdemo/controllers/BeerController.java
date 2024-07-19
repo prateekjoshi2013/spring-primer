@@ -24,7 +24,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class BeerController {
 
     public static final String API_V1_BEER = "/api/v1/beer";
-    public static final String API_V1_BEER_ID_PATH = "/api/v1/beer/{beerId}";
+    public static final String CUSTOMER_ID = "/{beerId}";
+    public static final String API_V1_BEER_ID_PATH = API_V1_BEER + CUSTOMER_ID;
     private final BeerService beerServiceImpl;
 
     @RequestMapping(API_V1_BEER)

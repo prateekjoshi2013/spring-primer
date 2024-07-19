@@ -21,39 +21,41 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
-@RequestMapping("/api/v1/customer")
 @RestController
 @AllArgsConstructor
 public class CustomerController {
+    private static final String CUSTOMER_ID = "/{customerId}";
+    public static final String API_V1_CUSTOMER = "/api/v1/customer";
+    public static final String API_V1_CUSTOMER_PATH_ID = API_V1_CUSTOMER + CUSTOMER_ID;
     private CustomerService customerServiceImpl;
 
-    @GetMapping("")
+    @GetMapping(API_V1_CUSTOMER)
     List<Customer> listCustomers() {
         return this.customerServiceImpl.listCustomers();
     }
 
-    @GetMapping("{customerId}")
+    @GetMapping(CUSTOMER_ID)
     public Customer getCustomerById(@PathVariable("customerId") UUID customerId) {
         return this.customerServiceImpl.getCustomerById(customerId);
     }
 
-    @PostMapping()
+    @PostMapping(API_V1_CUSTOMER)
     public ResponseEntity<Customer> postCustomer(@RequestBody Customer customer) {
         Customer savedCustomer = this.customerServiceImpl.saveCustomer(customer);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("location", "/api/v1/customer" + savedCustomer.getId());
+        headers.set("location", API_V1_CUSTOMER + savedCustomer.getId());
         return new ResponseEntity<Customer>(savedCustomer, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{customerId}")
+    @PutMapping(API_V1_CUSTOMER_PATH_ID)
     public ResponseEntity<Customer> putMethodName(@PathVariable UUID customerId, @RequestBody Customer customer) {
         Customer updatedCustomer = this.customerServiceImpl.updateCustomerById(customerId, customer);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("location", "/api/v1/customer" + updatedCustomer.getId());
+        headers.set("location", API_V1_CUSTOMER + updatedCustomer.getId());
         return new ResponseEntity<Customer>(updatedCustomer, headers, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{customerId}")
+    @DeleteMapping(API_V1_CUSTOMER_PATH_ID)
     public ResponseEntity<Object> deleteCustomerById(@PathVariable UUID customerId) {
         this.customerServiceImpl.deleteCustomerById(customerId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
