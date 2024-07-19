@@ -3,8 +3,10 @@ package com.prateek.web.springrestdemo.controllers;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.print.attribute.standard.Media;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +87,28 @@ public class BeerControllerTest {
     @SneakyThrows
     void testCreateNewBearJsonString() {
         System.out.println(objectMapper.writeValueAsString(mockedBeers.get(0)));
+    }
+
+    @SneakyThrows
+    @Test
+    void testUpdateBeer() {
+        // set up mock
+        Beer beer = mockedBeers.get(0);
+
+        // set up behaviour
+        given(beerService.updatedById(any(UUID.class), any(Beer.class))).willReturn(beer);
+
+        // act
+        mockMvc.perform(
+                put("/api/v1/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                // accept
+                .andExpect(status().isAccepted());
+
+        // verify
+        verify(beerService).updatedById(any(UUID.class), any(Beer.class));
     }
 
     @SneakyThrows
