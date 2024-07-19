@@ -10,7 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,34 +37,73 @@ public class BeerControllerTest {
     @MockBean
     BeerService beerService;
 
+    List<Beer> mockedBeers = Stream.of(
+            Beer.builder()
+                    .id(UUID.randomUUID())
+                    .beerName("indian pale ale")
+                    .price(BigDecimal.valueOf(12.023))
+                    .beerStyle(BeerStyle.PALE_ALE)
+                    .quantityOnHand(12)
+                    .upc("upc")
+                    .version(2)
+                    .createdDate(LocalDateTime.now())
+                    .updateDate(LocalDateTime.now())
+                    .build(),
+            Beer.builder()
+                    .id(UUID.randomUUID())
+                    .beerName("Fosters")
+                    .price(BigDecimal.valueOf(10.023))
+                    .beerStyle(BeerStyle.PILSNER)
+                    .quantityOnHand(10)
+                    .upc("upc")
+                    .version(2)
+                    .createdDate(LocalDateTime.now())
+                    .updateDate(LocalDateTime.now())
+                    .build(),
+            Beer.builder()
+                    .id(UUID.randomUUID())
+                    .beerName("Kingfisher")
+                    .price(BigDecimal.valueOf(10.023))
+                    .beerStyle(BeerStyle.STOUT)
+                    .quantityOnHand(10)
+                    .upc("upc")
+                    .version(2)
+                    .createdDate(LocalDateTime.now())
+                    .updateDate(LocalDateTime.now())
+                    .build())
+            .collect(Collectors.toList());
+
     @SneakyThrows
     @Test
-    void testGetBeerById() {
+    void testListBeers() {
+        given(beerService.listBeers()).willReturn(mockedBeers);
 
-        // Create Mock Beer
-        UUID beerId = UUID.randomUUID();
-        Beer beer = Beer.builder()
-                .beerName("my-beer")
-                .beerStyle(BeerStyle.ALE)
-                .id(beerId)
-                .version(1)
-                .createdDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
-                .price(BigDecimal.valueOf(23.98))
-                .quantityOnHand(23)
-                .upc("upc")
-                .build();
-
-        // Set up behaviours and mocks
-        given(beerService.getBeerById(any(UUID.class))).willReturn(beer);
-
-        // Act
-        mockMvc.perform(get("/api/v1/beer/" + beerId)
+        mockMvc.perform(get("/api/v1/beer")
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", is(beerId.toString())))
+                // jsonpath documentation : https://github.com/json-path/JsonPath
+                .andExpect(jsonPath("$.length()", is(3)));
+    }
+
+    @SneakyThrows
+    @Test
+    void testGetBeerById() {
+
+        // Get Mocked Beer
+        Beer beer = mockedBeers.get(0);
+        // Set up behaviours and mocks
+        given(beerService.getBeerById(any(UUID.class))).willReturn(beer);
+
+        // Act
+        mockMvc.perform(get("/api/v1/beer/" + beer.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                // Assert
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // jsonpath documentation : https://github.com/json-path/JsonPath
+                .andExpect(jsonPath("$.id", is(beer.getId().toString())))
                 .andExpect(jsonPath("$.beerName", is(beer.getBeerName())));
 
     }
