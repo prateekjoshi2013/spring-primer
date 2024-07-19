@@ -21,7 +21,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.print.attribute.standard.Media;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -98,7 +97,7 @@ public class BeerControllerTest {
         Beer beer = mockedBeers.get(0);
 
         mockMvc.perform(
-                delete("/api/v1/beer/" + beer.getId())
+                delete(BeerController.API_V1_BEER_ID_PATH, beer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -118,7 +117,7 @@ public class BeerControllerTest {
 
         // act
         mockMvc.perform(
-                put("/api/v1/beer/" + beer.getId())
+                put(BeerController.API_V1_BEER_ID_PATH, beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -136,7 +135,7 @@ public class BeerControllerTest {
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(mockedBeers.get(0));
 
         mockMvc.perform(
-                post("/api/v1/beer")
+                post(BeerController.API_V1_BEER)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockedBeers.get(1)))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -150,7 +149,7 @@ public class BeerControllerTest {
     void testListBeers() {
         given(beerService.listBeers()).willReturn(mockedBeers);
 
-        mockMvc.perform(get("/api/v1/beer")
+        mockMvc.perform(get(BeerController.API_V1_BEER)
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())
