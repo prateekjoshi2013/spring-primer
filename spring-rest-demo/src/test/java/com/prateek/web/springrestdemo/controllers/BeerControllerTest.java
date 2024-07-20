@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,7 +22,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
+import com.prateek.web.springrestdemo.domain.exceptions.ValidationException;
 import com.prateek.web.springrestdemo.model.Beer;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.services.BeerService;
@@ -177,5 +180,18 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$.id", is(beer.getId().toString())))
                 .andExpect(jsonPath("$.beerName", is(beer.getBeerName())));
 
-    }
+        }
+
+
+        @Test
+        void testValidationException() throws Exception {
+                // Set up behaviours and mocks
+                when(beerService.getBeerById(any(UUID.class)))
+                                .thenThrow(ValidationException.class);
+
+                // Act
+                mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, UUID.randomUUID()))
+                                .andExpect(status().is4xxClientError())
+                                .andDo(MockMvcResultHandlers.print());
+        }
 }
