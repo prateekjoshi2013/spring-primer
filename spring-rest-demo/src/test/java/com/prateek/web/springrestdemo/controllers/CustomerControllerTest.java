@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,6 +33,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
+import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
 import com.prateek.web.springrestdemo.model.Beer;
 import com.prateek.web.springrestdemo.model.Customer;
 import com.prateek.web.springrestdemo.services.CustomerService;
@@ -159,5 +162,21 @@ public class CustomerControllerTest {
         ArgumentCaptor<UUID> argumentCaptorUUID = ArgumentCaptor.forClass(UUID.class);
         verify(customerService).deleteCustomerById(argumentCaptorUUID.capture());
         assertThat(customer.getId()).isEqualTo(argumentCaptorUUID.getValue());
+    }
+
+    @Test
+    void testException() throws Exception {
+        // Set up behaviours and mocks
+        UUID customerId = UUID.randomUUID();
+        when(customerService.getCustomerById(any(UUID.class)))
+                .thenThrow(new NoCustomerException("No Customer with id: " + customerId + " found"));
+
+        // Act
+        mockMvc.perform(get(CustomerController.API_V1_CUSTOMER_PATH_ID, customerId.toString()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                // jsonpath documentation : https://github.com/json-path/JsonPath
+                .andExpect(jsonPath("$.message", is("No Customer with id: " + customerId + " found")))
+                .andExpect(jsonPath("$.details", is("uri=/api/v1/customer/" + customerId)));
     }
 }

@@ -5,7 +5,10 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
+import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
+import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
 import com.prateek.web.springrestdemo.model.Customer;
 import com.prateek.web.springrestdemo.services.CustomerService;
 
@@ -15,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,4 +64,15 @@ public class CustomerController {
         this.customerServiceImpl.deleteCustomerById(customerId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @ExceptionHandler(NoCustomerException.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
+        ResponseEntity<ErrorResponse> responseEntity = new ResponseEntity<>(
+                new ErrorResponse(
+                        ex.getMessage(),
+                        request.getDescription(false)),
+                HttpStatus.NOT_FOUND);
+        return responseEntity;
+    }
+
 }
