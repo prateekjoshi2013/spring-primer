@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
+import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.model.Beer;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 
@@ -60,10 +62,12 @@ public class BeerServiceImpl implements BeerService {
         }
 
         @Override
-        public Beer getBeerById(UUID id) {
-                Beer beer = this.beerMap.get(id);
-                log.info("sending the beer object with id {}: {}", id, beer);
-                return beer;
+        public Optional<Beer> getBeerById(UUID id) {
+                return Optional.ofNullable(this.beerMap.get(id))
+                                .map(beer -> {
+                                        log.info("sending the beer object with id {}: {}", beer.getId(), beer);
+                                        return Optional.of(beer);
+                                }).orElseThrow(() -> new NoBeerFoundException(id.toString()));
         }
 
         @Override
@@ -85,22 +89,27 @@ public class BeerServiceImpl implements BeerService {
         }
 
         @Override
-        public Beer updatedById(UUID beerId, Beer beer) {
-                Beer savedbeer = this.beerMap.get(beerId);
-                savedbeer.setBeerName(beer.getBeerName());
-                savedbeer.setBeerStyle(beer.getBeerStyle());
-                savedbeer.setPrice(beer.getPrice());
-                savedbeer.setQuantityOnHand(beer.getQuantityOnHand());
-                savedbeer.setUpc(beer.getUpc());
-                savedbeer.setUpdateDate(LocalDateTime.now());
-                log.info("Updated beer : {}", savedbeer);
-                return savedbeer;
+        public Optional<Beer> updatedById(UUID beerId, Beer beer) {
+                return Optional.ofNullable(this.beerMap.get(beerId)).map(
+                                updatedBeer -> {
+
+                                        updatedBeer.setBeerName(beer.getBeerName());
+                                        updatedBeer.setBeerStyle(beer.getBeerStyle());
+                                        updatedBeer.setPrice(beer.getPrice());
+                                        updatedBeer.setQuantityOnHand(beer.getQuantityOnHand());
+                                        updatedBeer.setUpc(beer.getUpc());
+                                        updatedBeer.setUpdateDate(LocalDateTime.now());
+                                        log.info("Updated beer : {}", updatedBeer);
+                                        return Optional.of(updatedBeer);
+                                }).orElseThrow(() -> new NoBeerFoundException(beerId.toString()));
         }
 
         @Override
         public void deletedById(UUID beerId) {
-                log.info("deleteing object :{}", this.beerMap.get(beerId));
-                this.beerMap.remove(beerId);
+                Optional.ofNullable(this.beerMap.get(beerId)).ifPresent(beer -> {
+                        log.info("deleteing object :{}", this.beerMap.get(beerId));
+                        beerMap.remove(beerId);
+                });
         }
 
 }

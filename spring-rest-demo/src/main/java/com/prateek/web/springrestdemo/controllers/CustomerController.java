@@ -3,11 +3,9 @@ package com.prateek.web.springrestdemo.controllers;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
-import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
 import com.prateek.web.springrestdemo.model.Customer;
 import com.prateek.web.springrestdemo.services.CustomerService;
@@ -40,7 +38,7 @@ public class CustomerController {
 
     @GetMapping(API_V1_CUSTOMER_PATH_ID)
     public Customer getCustomerById(@PathVariable("customerId") UUID customerId) {
-        return this.customerServiceImpl.getCustomerById(customerId);
+        return this.customerServiceImpl.getCustomerById(customerId).get();
     }
 
     @PostMapping(API_V1_CUSTOMER)
@@ -53,7 +51,7 @@ public class CustomerController {
 
     @PutMapping(API_V1_CUSTOMER_PATH_ID)
     public ResponseEntity<Customer> putMethodName(@PathVariable UUID customerId, @RequestBody Customer customer) {
-        Customer updatedCustomer = this.customerServiceImpl.updateCustomerById(customerId, customer);
+        Customer updatedCustomer = this.customerServiceImpl.updateCustomerById(customerId, customer).get();
         HttpHeaders headers = new HttpHeaders();
         headers.set("location", API_V1_CUSTOMER + updatedCustomer.getId());
         return new ResponseEntity<Customer>(updatedCustomer, headers, HttpStatus.ACCEPTED);

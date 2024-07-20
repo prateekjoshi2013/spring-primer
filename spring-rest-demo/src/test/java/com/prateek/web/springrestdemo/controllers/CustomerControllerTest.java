@@ -2,7 +2,6 @@ package com.prateek.web.springrestdemo.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -18,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,15 +26,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
-import com.prateek.web.springrestdemo.model.Beer;
 import com.prateek.web.springrestdemo.model.Customer;
 import com.prateek.web.springrestdemo.services.CustomerService;
 
@@ -97,7 +93,7 @@ public class CustomerControllerTest {
         // Get Mocked Beer
         Customer customer = mockedCustomers.get(0);
         // Set up behaviours and mocks
-        given(customerService.getCustomerById(any(UUID.class))).willReturn(customer);
+        given(customerService.getCustomerById(any(UUID.class))).willReturn(Optional.of(customer));
 
         // Act
         mockMvc.perform(get(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())
@@ -134,7 +130,8 @@ public class CustomerControllerTest {
         Customer customer = mockedCustomers.get(0);
 
         // set up behaviour
-        given(customerService.updateCustomerById(any(UUID.class), any(Customer.class))).willReturn(customer);
+        given(customerService.updateCustomerById(any(UUID.class), any(Customer.class)))
+                .willReturn(Optional.of(customer));
 
         // act
         mockMvc.perform(
@@ -169,14 +166,14 @@ public class CustomerControllerTest {
         // Set up behaviours and mocks
         UUID customerId = UUID.randomUUID();
         when(customerService.getCustomerById(any(UUID.class)))
-                .thenThrow(new NoCustomerException("No Customer with id: " + customerId + " found"));
+                .thenThrow(new NoCustomerException(customerId.toString()));
 
         // Act
         mockMvc.perform(get(CustomerController.API_V1_CUSTOMER_PATH_ID, customerId.toString()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 // jsonpath documentation : https://github.com/json-path/JsonPath
-                .andExpect(jsonPath("$.message", is("No Customer with id: " + customerId + " found")))
+                .andExpect(jsonPath("$.message", is("Customer with id: " + customerId + " not found")))
                 .andExpect(jsonPath("$.details", is("uri=/api/v1/customer/" + customerId)));
     }
 }

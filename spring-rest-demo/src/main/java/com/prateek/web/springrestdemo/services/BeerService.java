@@ -1,6 +1,7 @@
 package com.prateek.web.springrestdemo.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.prateek.web.springrestdemo.model.Beer;
@@ -8,11 +9,11 @@ import com.prateek.web.springrestdemo.model.Beer;
 public interface BeerService {
     List<Beer> listBeers();
 
-    Beer getBeerById(UUID id);
+    Optional<Beer> getBeerById(UUID id);
 
     Beer saveNewBeer(Beer beer);
 
-    Beer updatedById(UUID beerId, Beer beer);
+    Optional<Beer> updatedById(UUID beerId, Beer beer);
 
     void deletedById(UUID beerId);
 }

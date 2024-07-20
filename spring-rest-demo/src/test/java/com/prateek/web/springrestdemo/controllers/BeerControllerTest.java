@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,142 +44,142 @@ import lombok.SneakyThrows;
 @WebMvcTest(BeerController.class)
 public class BeerControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
+        @Autowired
+        MockMvc mockMvc;
 
-    @Autowired
-    ObjectMapper objectMapper;
+        @Autowired
+        ObjectMapper objectMapper;
 
-    @MockBean
-    BeerService beerService;
+        @MockBean
+        BeerService beerService;
 
-    List<Beer> mockedBeers = Stream.of(
-            Beer.builder()
-                    .id(UUID.randomUUID())
-                    .beerName("indian pale ale")
-                    .price(BigDecimal.valueOf(12.023))
-                    .beerStyle(BeerStyle.PALE_ALE)
-                    .quantityOnHand(12)
-                    .upc("upc")
-                    .version(2)
-                    .createdDate(LocalDateTime.now())
-                    .updateDate(LocalDateTime.now())
-                    .build(),
-            Beer.builder()
-                    .id(UUID.randomUUID())
-                    .beerName("Fosters")
-                    .price(BigDecimal.valueOf(10.023))
-                    .beerStyle(BeerStyle.PILSNER)
-                    .quantityOnHand(10)
-                    .upc("upc")
-                    .version(2)
-                    .createdDate(LocalDateTime.now())
-                    .updateDate(LocalDateTime.now())
-                    .build(),
-            Beer.builder()
-                    .id(UUID.randomUUID())
-                    .beerName("Kingfisher")
-                    .price(BigDecimal.valueOf(10.023))
-                    .beerStyle(BeerStyle.STOUT)
-                    .quantityOnHand(10)
-                    .upc("upc")
-                    .version(2)
-                    .createdDate(LocalDateTime.now())
-                    .updateDate(LocalDateTime.now())
-                    .build())
-            .collect(Collectors.toList());
+        List<Beer> mockedBeers = Stream.of(
+                        Beer.builder()
+                                        .id(UUID.randomUUID())
+                                        .beerName("indian pale ale")
+                                        .price(BigDecimal.valueOf(12.023))
+                                        .beerStyle(BeerStyle.PALE_ALE)
+                                        .quantityOnHand(12)
+                                        .upc("upc")
+                                        .version(2)
+                                        .createdDate(LocalDateTime.now())
+                                        .updateDate(LocalDateTime.now())
+                                        .build(),
+                        Beer.builder()
+                                        .id(UUID.randomUUID())
+                                        .beerName("Fosters")
+                                        .price(BigDecimal.valueOf(10.023))
+                                        .beerStyle(BeerStyle.PILSNER)
+                                        .quantityOnHand(10)
+                                        .upc("upc")
+                                        .version(2)
+                                        .createdDate(LocalDateTime.now())
+                                        .updateDate(LocalDateTime.now())
+                                        .build(),
+                        Beer.builder()
+                                        .id(UUID.randomUUID())
+                                        .beerName("Kingfisher")
+                                        .price(BigDecimal.valueOf(10.023))
+                                        .beerStyle(BeerStyle.STOUT)
+                                        .quantityOnHand(10)
+                                        .upc("upc")
+                                        .version(2)
+                                        .createdDate(LocalDateTime.now())
+                                        .updateDate(LocalDateTime.now())
+                                        .build())
+                        .collect(Collectors.toList());
 
-    @Test
-    @SneakyThrows
-    void testCreateNewBearJsonString() {
-        System.out.println(objectMapper.writeValueAsString(mockedBeers.get(0)));
-    }
+        @Test
+        @SneakyThrows
+        void testCreateNewBearJsonString() {
+                System.out.println(objectMapper.writeValueAsString(mockedBeers.get(0)));
+        }
 
-    @SneakyThrows
-    @Test
-    void testDeleteBeer() {
-        Beer beer = mockedBeers.get(0);
+        @SneakyThrows
+        @Test
+        void testDeleteBeer() {
+                Beer beer = mockedBeers.get(0);
 
-        mockMvc.perform(
-                delete(BeerController.API_V1_BEER_ID_PATH, beer.getId())
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+                mockMvc.perform(
+                                delete(BeerController.API_V1_BEER_ID_PATH, beer.getId())
+                                                .accept(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isNoContent());
 
-        ArgumentCaptor<UUID> argumentCaptorUUID = ArgumentCaptor.forClass(UUID.class);
-        verify(beerService).deletedById(argumentCaptorUUID.capture());
-        assertThat(beer.getId()).isEqualTo(argumentCaptorUUID.getValue());
-    }
+                ArgumentCaptor<UUID> argumentCaptorUUID = ArgumentCaptor.forClass(UUID.class);
+                verify(beerService).deletedById(argumentCaptorUUID.capture());
+                assertThat(beer.getId()).isEqualTo(argumentCaptorUUID.getValue());
+        }
 
-    @SneakyThrows
-    @Test
-    void testUpdateBeer() {
-        // set up mock
-        Beer beer = mockedBeers.get(0);
+        @SneakyThrows
+        @Test
+        void testUpdateBeer() {
+                // set up mock
+                Beer beer = mockedBeers.get(0);
 
-        // set up behaviour
-        given(beerService.updatedById(any(UUID.class), any(Beer.class))).willReturn(beer);
+                // set up behaviour
+                given(beerService.updatedById(any(UUID.class), any(Beer.class))).willReturn(Optional.of(beer));
 
-        // act
-        mockMvc.perform(
-                put(BeerController.API_V1_BEER_ID_PATH, beer.getId())
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(beer)))
-                // accept
-                .andExpect(status().isAccepted());
+                // act
+                mockMvc.perform(
+                                put(BeerController.API_V1_BEER_ID_PATH, beer.getId())
+                                                .accept(MediaType.APPLICATION_JSON)
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(beer)))
+                                // accept
+                                .andExpect(status().isAccepted());
 
-        // verify
-        verify(beerService).updatedById(any(UUID.class), any(Beer.class));
-    }
+                // verify
+                verify(beerService).updatedById(any(UUID.class), any(Beer.class));
+        }
 
-    @SneakyThrows
-    @Test
-    void testCreateBeer() {
+        @SneakyThrows
+        @Test
+        void testCreateBeer() {
 
-        given(beerService.saveNewBeer(any(Beer.class))).willReturn(mockedBeers.get(0));
+                given(beerService.saveNewBeer(any(Beer.class))).willReturn(mockedBeers.get(0));
 
-        mockMvc.perform(
-                post(BeerController.API_V1_BEER)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(mockedBeers.get(1)))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(header().exists("location"));
+                mockMvc.perform(
+                                post(BeerController.API_V1_BEER)
+                                                .accept(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(mockedBeers.get(1)))
+                                                .contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isCreated())
+                                .andExpect(header().exists("location"));
 
-    }
+        }
 
-    @SneakyThrows
-    @Test
-    void testListBeers() {
-        given(beerService.listBeers()).willReturn(mockedBeers);
+        @SneakyThrows
+        @Test
+        void testListBeers() {
+                given(beerService.listBeers()).willReturn(mockedBeers);
 
-        mockMvc.perform(get(BeerController.API_V1_BEER)
-                .accept(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                // jsonpath documentation : https://github.com/json-path/JsonPath
-                .andExpect(jsonPath("$.length()", is(3)));
-    }
+                mockMvc.perform(get(BeerController.API_V1_BEER)
+                                .accept(MediaType.APPLICATION_JSON))
+                                // Assert
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                // jsonpath documentation : https://github.com/json-path/JsonPath
+                                .andExpect(jsonPath("$.length()", is(3)));
+        }
 
-    @SneakyThrows
-    @Test
-    void testGetBeerById() {
+        @SneakyThrows
+        @Test
+        void testGetBeerById() {
 
-        // Get Mocked Beer
-        Beer beer = mockedBeers.get(0);
-        // Set up behaviours and mocks
-        given(beerService.getBeerById(any(UUID.class))).willReturn(beer);
+                // Get Mocked Beer
+                Beer beer = mockedBeers.get(0);
+                // Set up behaviours and mocks
+                given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.of(beer));
 
-        // Act
-        mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH,beer.getId())
-                .accept(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                // jsonpath documentation : https://github.com/json-path/JsonPath
-                .andExpect(jsonPath("$.id", is(beer.getId().toString())))
-                .andExpect(jsonPath("$.beerName", is(beer.getBeerName())));
+                // Act
+                mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, beer.getId())
+                                .accept(MediaType.APPLICATION_JSON))
+                                // Assert
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                // jsonpath documentation : https://github.com/json-path/JsonPath
+                                .andExpect(jsonPath("$.id", is(beer.getId().toString())))
+                                .andExpect(jsonPath("$.beerName", is(beer.getBeerName())));
 
         }
 
@@ -187,15 +188,14 @@ public class BeerControllerTest {
         void testNoBeerException() {
                 // Set up behaviours and mocks
                 UUID beerId = UUID.randomUUID();
-                when(beerService.getBeerById(any(UUID.class)))
-                                .thenThrow(new NoBeerFoundException("No Beer with id: " + beerId + " found"));
-
+                // Set up behaviours and mocks
+                given(beerService.getBeerById(any(UUID.class))).willThrow(new NoBeerFoundException(beerId.toString()));
                 // Act
                 mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, beerId.toString()))
                                 .andExpect(status().isNotFound())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                                 // jsonpath documentation : https://github.com/json-path/JsonPath
-                                .andExpect(jsonPath("$.message", is("No Beer with id: " + beerId + " found")))
+                                .andExpect(jsonPath("$.message", is("Beer with id: " + beerId + " not found")))
                                 .andExpect(jsonPath("$.details", is("uri=/api/v1/beer/" + beerId)));
         }
 

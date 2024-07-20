@@ -35,7 +35,7 @@ public class BeerController {
 
     @GetMapping(API_V1_BEER_ID_PATH)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
-        return beerServiceImpl.getBeerById(beerId);
+        return beerServiceImpl.getBeerById(beerId).get();
     }
 
     @PostMapping(API_V1_BEER)
@@ -48,7 +48,7 @@ public class BeerController {
 
     @PutMapping(API_V1_BEER_ID_PATH)
     public ResponseEntity<Beer> putMethodName(@PathVariable UUID beerId, @RequestBody Beer beer) {
-        Beer updatedBeer = this.beerServiceImpl.updatedById(beerId, beer);
+        Beer updatedBeer = this.beerServiceImpl.updatedById(beerId, beer).get();
         HttpHeaders headers = new HttpHeaders();
         headers.add("location", API_V1_BEER + "/" + updatedBeer.getId());
         return new ResponseEntity<Beer>(updatedBeer, headers, HttpStatus.ACCEPTED);

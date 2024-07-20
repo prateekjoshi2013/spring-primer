@@ -3,12 +3,14 @@ package com.prateek.web.springrestdemo.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
+import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
 import com.prateek.web.springrestdemo.model.Customer;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +43,13 @@ public class CustomerServiceImpl implements CustomerService {
                         .collect(Collectors.toMap(customer -> customer.getId(), customer -> customer));
 
         @Override
-        public Customer getCustomerById(UUID customerId) {
-                Customer customer = this.customerMap.get(customerId);
-                log.info("Sending customer {}:{}", customerId, customer);
-                return customer;
+        public Optional<Customer> getCustomerById(UUID customerId) {
+                return Optional.ofNullable(this.customerMap.get(customerId))
+                                .map(customer -> {
+                                        log.info("Sending customer {}:{}", customerId, customer);
+                                        return Optional.of(customer);
+
+                                }).orElseThrow(() -> new NoCustomerException(customerId.toString()));
         }
 
         @Override
@@ -69,18 +74,23 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         @Override
-        public Customer updateCustomerById(UUID customerId, Customer customer) {
-                Customer updatedCustomer = this.getCustomerById(customerId);
-                updatedCustomer.setCustomerName(customer.getCustomerName());
-                updatedCustomer.setLastModifiedDate(LocalDateTime.now());
-                log.info("updated customer: {}", customer);
-                return updatedCustomer;
+        public Optional<Customer> updateCustomerById(UUID customerId, Customer customer) {
+                return Optional.ofNullable(this.customerMap.get(customerId))
+                                .map(oldCustomer -> {
+                                        oldCustomer.setCustomerName(customer.getCustomerName());
+                                        oldCustomer.setLastModifiedDate(LocalDateTime.now());
+                                        log.info("updated customer: {}", oldCustomer);
+                                        return Optional.of(oldCustomer);
+                                }).orElseThrow(() -> new NoCustomerException(customerId.toString()));
         }
 
         @Override
         public void deleteCustomerById(UUID customerId) {
-                this.customerMap.remove(customerId);
-                log.info("deleting customer with id :{}", customerId);
+                Optional.ofNullable(this.customerMap.get(customerId))
+                                .ifPresent(customer -> {
+                                        this.customerMap.remove(customerId);
+                                        log.info("deleting customer with id :{}", customerId);
+                                });
         }
 
 }
