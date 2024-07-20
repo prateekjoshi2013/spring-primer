@@ -31,15 +31,29 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+		<!-- spring boot web dependency for web apps 
+			
+		- Spring MVC: Provides the core components for building web applications, including support for
+		RESTful APIs.
+		- Jackson: Used for JSON processing, enabling the serialization and deserialization of Java objects
+		to and from JSON
+		- Embedded Web Server: Includes Tomcat by default, but you can switch to Jetty or Undertow if
+		needed.
+		- Validation: Provides support for bean validation using the Hibernate Validator implementation of
+		the Bean Validation API
+		- SLF4J and Logback: Provides logging support
+		 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<!-- lombok dependency -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- testing dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -57,6 +71,15 @@
 			environments 
 			-->
 			<optional>true</optional>
+		</dependency>
+		<!-- Spring data jpa dependecies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 		</dependency>
 	</dependencies>
 
