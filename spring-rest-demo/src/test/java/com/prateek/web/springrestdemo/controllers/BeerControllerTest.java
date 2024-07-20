@@ -182,6 +182,22 @@ public class BeerControllerTest {
 
         }
 
+        @SneakyThrows
+        @Test
+        void testNoBeerException() {
+                // Set up behaviours and mocks
+                UUID beerId = UUID.randomUUID();
+                when(beerService.getBeerById(any(UUID.class)))
+                                .thenThrow(new NoBeerFoundException("No Beer with id: " + beerId + " found"));
+
+                // Act
+                mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, beerId.toString()))
+                                .andExpect(status().isNotFound())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                // jsonpath documentation : https://github.com/json-path/JsonPath
+                                .andExpect(jsonPath("$.message", is("No Beer with id: " + beerId + " found")))
+                                .andExpect(jsonPath("$.details", is("uri=/api/v1/beer/" + beerId)));
+        }
 
         @Test
         void testValidationException() throws Exception {
