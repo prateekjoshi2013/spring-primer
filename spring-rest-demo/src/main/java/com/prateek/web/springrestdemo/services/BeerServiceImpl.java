@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
-import com.prateek.web.springrestdemo.model.Beer;
+import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class BeerServiceImpl implements BeerService {
-        private Map<UUID, Beer> beerMap = Stream.of(
-                        Beer.builder()
+        private Map<UUID, BeerDTO> beerMap = Stream.of(
+                        BeerDTO.builder()
                                         .id(UUID.randomUUID())
                                         .beerName("indian pale ale")
                                         .price(BigDecimal.valueOf(12.023))
@@ -32,7 +32,7 @@ public class BeerServiceImpl implements BeerService {
                                         .createdDate(LocalDateTime.now())
                                         .updateDate(LocalDateTime.now())
                                         .build(),
-                        Beer.builder()
+                        BeerDTO.builder()
                                         .id(UUID.randomUUID())
                                         .beerName("Fosters")
                                         .price(BigDecimal.valueOf(10.023))
@@ -43,7 +43,7 @@ public class BeerServiceImpl implements BeerService {
                                         .createdDate(LocalDateTime.now())
                                         .updateDate(LocalDateTime.now())
                                         .build(),
-                        Beer.builder()
+                        BeerDTO.builder()
                                         .id(UUID.randomUUID())
                                         .beerName("Kingfisher")
                                         .price(BigDecimal.valueOf(10.023))
@@ -56,13 +56,13 @@ public class BeerServiceImpl implements BeerService {
                                         .build())
                         .collect(Collectors.toMap(beer -> beer.getId(), beer -> beer));
 
-        public List<Beer> listBeers() {
+        public List<BeerDTO> listBeers() {
                 log.info("sending the list of beers");
                 return this.beerMap.values().stream().toList();
         }
 
         @Override
-        public Optional<Beer> getBeerById(UUID id) {
+        public Optional<BeerDTO> getBeerById(UUID id) {
                 return Optional.ofNullable(this.beerMap.get(id))
                                 .map(beer -> {
                                         log.info("sending the beer object with id {}: {}", beer.getId(), beer);
@@ -71,8 +71,8 @@ public class BeerServiceImpl implements BeerService {
         }
 
         @Override
-        public Beer saveNewBeer(Beer beer) {
-                Beer savedBeer = Beer.builder()
+        public BeerDTO saveNewBeer(BeerDTO beer) {
+                BeerDTO savedBeer = BeerDTO.builder()
                                 .id(UUID.randomUUID())
                                 .beerName(beer.getBeerName())
                                 .price(beer.getPrice())
@@ -89,7 +89,7 @@ public class BeerServiceImpl implements BeerService {
         }
 
         @Override
-        public Optional<Beer> updatedById(UUID beerId, Beer beer) {
+        public Optional<BeerDTO> updatedById(UUID beerId, BeerDTO beer) {
                 return Optional.ofNullable(this.beerMap.get(beerId)).map(
                                 updatedBeer -> {
 

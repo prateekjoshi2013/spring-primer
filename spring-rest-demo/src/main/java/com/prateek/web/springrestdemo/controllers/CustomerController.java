@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
-import com.prateek.web.springrestdemo.model.Customer;
+import com.prateek.web.springrestdemo.model.CustomerDTO;
 import com.prateek.web.springrestdemo.services.CustomerService;
 
 import lombok.AllArgsConstructor;
@@ -32,29 +32,29 @@ public class CustomerController {
     private CustomerService customerServiceImpl;
 
     @GetMapping(API_V1_CUSTOMER)
-    List<Customer> listCustomers() {
+    List<CustomerDTO> listCustomers() {
         return this.customerServiceImpl.listCustomers();
     }
 
     @GetMapping(API_V1_CUSTOMER_PATH_ID)
-    public Customer getCustomerById(@PathVariable("customerId") UUID customerId) {
+    public CustomerDTO getCustomerById(@PathVariable("customerId") UUID customerId) {
         return this.customerServiceImpl.getCustomerById(customerId).get();
     }
 
     @PostMapping(API_V1_CUSTOMER)
-    public ResponseEntity<Customer> postCustomer(@RequestBody Customer customer) {
-        Customer savedCustomer = this.customerServiceImpl.saveCustomer(customer);
+    public ResponseEntity<CustomerDTO> postCustomer(@RequestBody CustomerDTO customer) {
+        CustomerDTO savedCustomer = this.customerServiceImpl.saveCustomer(customer);
         HttpHeaders headers = new HttpHeaders();
         headers.set("location", API_V1_CUSTOMER + savedCustomer.getId());
-        return new ResponseEntity<Customer>(savedCustomer, headers, HttpStatus.CREATED);
+        return new ResponseEntity<CustomerDTO>(savedCustomer, headers, HttpStatus.CREATED);
     }
 
     @PutMapping(API_V1_CUSTOMER_PATH_ID)
-    public ResponseEntity<Customer> putMethodName(@PathVariable UUID customerId, @RequestBody Customer customer) {
-        Customer updatedCustomer = this.customerServiceImpl.updateCustomerById(customerId, customer).get();
+    public ResponseEntity<CustomerDTO> putMethodName(@PathVariable UUID customerId, @RequestBody CustomerDTO customer) {
+        CustomerDTO updatedCustomer = this.customerServiceImpl.updateCustomerById(customerId, customer).get();
         HttpHeaders headers = new HttpHeaders();
         headers.set("location", API_V1_CUSTOMER + updatedCustomer.getId());
-        return new ResponseEntity<Customer>(updatedCustomer, headers, HttpStatus.ACCEPTED);
+        return new ResponseEntity<CustomerDTO>(updatedCustomer, headers, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping(API_V1_CUSTOMER_PATH_ID)

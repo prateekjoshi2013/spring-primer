@@ -3,7 +3,7 @@ package com.prateek.web.springrestdemo.controllers;
 import java.util.List;
 import java.util.UUID;
 
-import com.prateek.web.springrestdemo.model.Beer;
+import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.services.BeerService;
 
 import lombok.AllArgsConstructor;
@@ -29,29 +29,29 @@ public class BeerController {
     private final BeerService beerServiceImpl;
 
     @RequestMapping(API_V1_BEER)
-    public List<Beer> listBeers() {
+    public List<BeerDTO> listBeers() {
         return beerServiceImpl.listBeers();
     }
 
     @GetMapping(API_V1_BEER_ID_PATH)
-    public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
+    public BeerDTO getBeerById(@PathVariable("beerId") UUID beerId) {
         return beerServiceImpl.getBeerById(beerId).get();
     }
 
     @PostMapping(API_V1_BEER)
-    public ResponseEntity<Beer> postBeer(@RequestBody Beer beer) {
-        Beer savedBeer = this.beerServiceImpl.saveNewBeer(beer);
+    public ResponseEntity<BeerDTO> postBeer(@RequestBody BeerDTO beer) {
+        BeerDTO savedBeer = this.beerServiceImpl.saveNewBeer(beer);
         HttpHeaders headers = new HttpHeaders();
         headers.add("location", API_V1_BEER + "/" + savedBeer.getId());
-        return new ResponseEntity<Beer>(savedBeer, headers, HttpStatus.CREATED);
+        return new ResponseEntity<BeerDTO>(savedBeer, headers, HttpStatus.CREATED);
     }
 
     @PutMapping(API_V1_BEER_ID_PATH)
-    public ResponseEntity<Beer> putMethodName(@PathVariable UUID beerId, @RequestBody Beer beer) {
-        Beer updatedBeer = this.beerServiceImpl.updatedById(beerId, beer).get();
+    public ResponseEntity<BeerDTO> putMethodName(@PathVariable UUID beerId, @RequestBody BeerDTO beer) {
+        BeerDTO updatedBeer = this.beerServiceImpl.updatedById(beerId, beer).get();
         HttpHeaders headers = new HttpHeaders();
         headers.add("location", API_V1_BEER + "/" + updatedBeer.getId());
-        return new ResponseEntity<Beer>(updatedBeer, headers, HttpStatus.ACCEPTED);
+        return new ResponseEntity<BeerDTO>(updatedBeer, headers, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping(API_V1_BEER_ID_PATH)

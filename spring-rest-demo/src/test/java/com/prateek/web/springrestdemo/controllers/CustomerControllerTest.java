@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
-import com.prateek.web.springrestdemo.model.Customer;
+import com.prateek.web.springrestdemo.model.CustomerDTO;
 import com.prateek.web.springrestdemo.services.CustomerService;
 
 import lombok.SneakyThrows;
@@ -49,22 +49,22 @@ public class CustomerControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    private List<Customer> mockedCustomers = Stream.of(
-            Customer.builder()
+    private List<CustomerDTO> mockedCustomers = Stream.of(
+            CustomerDTO.builder()
                     .version(1)
                     .id(UUID.randomUUID())
                     .customerName("John")
                     .createdDate(LocalDateTime.now())
                     .lastModifiedDate(LocalDateTime.now())
                     .build(),
-            Customer.builder()
+            CustomerDTO.builder()
                     .version(2)
                     .id(UUID.randomUUID())
                     .customerName("Jane")
                     .createdDate(LocalDateTime.now())
                     .lastModifiedDate(LocalDateTime.now())
                     .build(),
-            Customer.builder()
+            CustomerDTO.builder()
                     .version(3)
                     .id(UUID.randomUUID())
                     .customerName("Kane")
@@ -91,7 +91,7 @@ public class CustomerControllerTest {
     @Test
     void testGetCustomerById() {
         // Get Mocked Beer
-        Customer customer = mockedCustomers.get(0);
+        CustomerDTO customer = mockedCustomers.get(0);
         // Set up behaviours and mocks
         given(customerService.getCustomerById(any(UUID.class))).willReturn(Optional.of(customer));
 
@@ -111,7 +111,7 @@ public class CustomerControllerTest {
     @Test
     void testCreateBeer() {
 
-        given(customerService.saveCustomer(any(Customer.class))).willReturn(mockedCustomers.get(1));
+        given(customerService.saveCustomer(any(CustomerDTO.class))).willReturn(mockedCustomers.get(1));
 
         mockMvc.perform(
                 post(CustomerController.API_V1_CUSTOMER)
@@ -127,10 +127,10 @@ public class CustomerControllerTest {
     @Test
     void testUpdateBeer() {
         // set up mock
-        Customer customer = mockedCustomers.get(0);
+        CustomerDTO customer = mockedCustomers.get(0);
 
         // set up behaviour
-        given(customerService.updateCustomerById(any(UUID.class), any(Customer.class)))
+        given(customerService.updateCustomerById(any(UUID.class), any(CustomerDTO.class)))
                 .willReturn(Optional.of(customer));
 
         // act
@@ -143,13 +143,13 @@ public class CustomerControllerTest {
                 .andExpect(status().isAccepted());
 
         // verify
-        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+        verify(customerService).updateCustomerById(any(UUID.class), any(CustomerDTO.class));
     }
 
     @SneakyThrows
     @Test
     void testDeleteBeer() {
-        Customer customer = mockedCustomers.get(0);
+        CustomerDTO customer = mockedCustomers.get(0);
 
         mockMvc.perform(
                 delete(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())

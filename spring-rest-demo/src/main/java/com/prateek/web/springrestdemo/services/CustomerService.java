@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.prateek.web.springrestdemo.model.Customer;
+import com.prateek.web.springrestdemo.model.CustomerDTO;
 
 public interface CustomerService {
 
-    Optional<Customer> getCustomerById(UUID customerId);
+    Optional<CustomerDTO> getCustomerById(UUID customerId);
 
-    List<Customer> listCustomers();
+    List<CustomerDTO> listCustomers();
 
-    Customer saveCustomer(Customer customer);
+    CustomerDTO saveCustomer(CustomerDTO customer);
 
-    Optional<Customer> updateCustomerById(UUID customerId, Customer customer);
+    Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customer);
 
     void deleteCustomerById(UUID customerId);
 }

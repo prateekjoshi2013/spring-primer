@@ -4,16 +4,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.prateek.web.springrestdemo.model.Beer;
+import com.prateek.web.springrestdemo.model.BeerDTO;
 
 public interface BeerService {
-    List<Beer> listBeers();
+    List<BeerDTO> listBeers();
 
-    Optional<Beer> getBeerById(UUID id);
+    Optional<BeerDTO> getBeerById(UUID id);
 
-    Beer saveNewBeer(Beer beer);
+    BeerDTO saveNewBeer(BeerDTO beer);
 
-    Optional<Beer> updatedById(UUID beerId, Beer beer);
+    Optional<BeerDTO> updatedById(UUID beerId, BeerDTO beer);
 
     void deletedById(UUID beerId);
 }

@@ -11,29 +11,29 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
-import com.prateek.web.springrestdemo.model.Customer;
+import com.prateek.web.springrestdemo.model.CustomerDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class CustomerServiceImpl implements CustomerService {
-        private Map<UUID, Customer> customerMap = Stream.of(
-                        Customer.builder()
+        private Map<UUID, CustomerDTO> customerMap = Stream.of(
+                        CustomerDTO.builder()
                                         .version(1)
                                         .id(UUID.randomUUID())
                                         .customerName("John")
                                         .createdDate(LocalDateTime.now())
                                         .lastModifiedDate(LocalDateTime.now())
                                         .build(),
-                        Customer.builder()
+                        CustomerDTO.builder()
                                         .version(2)
                                         .id(UUID.randomUUID())
                                         .customerName("Jane")
                                         .createdDate(LocalDateTime.now())
                                         .lastModifiedDate(LocalDateTime.now())
                                         .build(),
-                        Customer.builder()
+                        CustomerDTO.builder()
                                         .version(3)
                                         .id(UUID.randomUUID())
                                         .customerName("Kane")
@@ -43,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
                         .collect(Collectors.toMap(customer -> customer.getId(), customer -> customer));
 
         @Override
-        public Optional<Customer> getCustomerById(UUID customerId) {
+        public Optional<CustomerDTO> getCustomerById(UUID customerId) {
                 return Optional.ofNullable(this.customerMap.get(customerId))
                                 .map(customer -> {
                                         log.info("Sending customer {}:{}", customerId, customer);
@@ -53,14 +53,14 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         @Override
-        public List<Customer> listCustomers() {
+        public List<CustomerDTO> listCustomers() {
                 log.info("Sending list of customers");
                 return this.customerMap.values().stream().collect(Collectors.toList());
         }
 
         @Override
-        public Customer saveCustomer(Customer customer) {
-                Customer savedCustomer = Customer
+        public CustomerDTO saveCustomer(CustomerDTO customer) {
+                CustomerDTO savedCustomer = CustomerDTO
                                 .builder()
                                 .version(customer.getVersion())
                                 .id(UUID.randomUUID())
@@ -74,7 +74,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         @Override
-        public Optional<Customer> updateCustomerById(UUID customerId, Customer customer) {
+        public Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customer) {
                 return Optional.ofNullable(this.customerMap.get(customerId))
                                 .map(oldCustomer -> {
                                         oldCustomer.setCustomerName(customer.getCustomerName());

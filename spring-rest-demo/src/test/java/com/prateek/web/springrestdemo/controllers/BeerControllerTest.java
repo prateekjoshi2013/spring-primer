@@ -35,7 +35,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.domain.exceptions.ValidationException;
-import com.prateek.web.springrestdemo.model.Beer;
+import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.services.BeerService;
 
@@ -53,8 +53,8 @@ public class BeerControllerTest {
         @MockBean
         BeerService beerService;
 
-        List<Beer> mockedBeers = Stream.of(
-                        Beer.builder()
+        List<BeerDTO> mockedBeers = Stream.of(
+                        BeerDTO.builder()
                                         .id(UUID.randomUUID())
                                         .beerName("indian pale ale")
                                         .price(BigDecimal.valueOf(12.023))
@@ -65,7 +65,7 @@ public class BeerControllerTest {
                                         .createdDate(LocalDateTime.now())
                                         .updateDate(LocalDateTime.now())
                                         .build(),
-                        Beer.builder()
+                        BeerDTO.builder()
                                         .id(UUID.randomUUID())
                                         .beerName("Fosters")
                                         .price(BigDecimal.valueOf(10.023))
@@ -76,7 +76,7 @@ public class BeerControllerTest {
                                         .createdDate(LocalDateTime.now())
                                         .updateDate(LocalDateTime.now())
                                         .build(),
-                        Beer.builder()
+                        BeerDTO.builder()
                                         .id(UUID.randomUUID())
                                         .beerName("Kingfisher")
                                         .price(BigDecimal.valueOf(10.023))
@@ -98,7 +98,7 @@ public class BeerControllerTest {
         @SneakyThrows
         @Test
         void testDeleteBeer() {
-                Beer beer = mockedBeers.get(0);
+                BeerDTO beer = mockedBeers.get(0);
 
                 mockMvc.perform(
                                 delete(BeerController.API_V1_BEER_ID_PATH, beer.getId())
@@ -114,10 +114,10 @@ public class BeerControllerTest {
         @Test
         void testUpdateBeer() {
                 // set up mock
-                Beer beer = mockedBeers.get(0);
+                BeerDTO beer = mockedBeers.get(0);
 
                 // set up behaviour
-                given(beerService.updatedById(any(UUID.class), any(Beer.class))).willReturn(Optional.of(beer));
+                given(beerService.updatedById(any(UUID.class), any(BeerDTO.class))).willReturn(Optional.of(beer));
 
                 // act
                 mockMvc.perform(
@@ -129,14 +129,14 @@ public class BeerControllerTest {
                                 .andExpect(status().isAccepted());
 
                 // verify
-                verify(beerService).updatedById(any(UUID.class), any(Beer.class));
+                verify(beerService).updatedById(any(UUID.class), any(BeerDTO.class));
         }
 
         @SneakyThrows
         @Test
         void testCreateBeer() {
 
-                given(beerService.saveNewBeer(any(Beer.class))).willReturn(mockedBeers.get(0));
+                given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(mockedBeers.get(0));
 
                 mockMvc.perform(
                                 post(BeerController.API_V1_BEER)
@@ -167,7 +167,7 @@ public class BeerControllerTest {
         void testGetBeerById() {
 
                 // Get Mocked Beer
-                Beer beer = mockedBeers.get(0);
+                BeerDTO beer = mockedBeers.get(0);
                 // Set up behaviours and mocks
                 given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.of(beer));
 
