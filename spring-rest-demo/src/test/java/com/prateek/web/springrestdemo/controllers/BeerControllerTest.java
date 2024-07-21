@@ -212,7 +212,7 @@ public class BeerControllerTest {
         }
 
         @Test
-        void testConstraintViolationException() throws Exception {
+        void testConstraintViolationException1() throws Exception {
                 BeerDTO beer = BeerDTO.builder().beerName("").build();
                 mockMvc.perform(
                                 post(BeerController.API_V1_BEER)
@@ -220,6 +220,18 @@ public class BeerControllerTest {
                                                 .content(objectMapper.writeValueAsString(beer))
                                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isBadRequest())
-                                .andExpect(jsonPath("$.length()", is(1)));
+                                .andExpect(jsonPath("$.length()", is(3)));
+        }
+
+        @Test
+        void testConstraintViolationException2() throws Exception {
+                BeerDTO beer = BeerDTO.builder().beerName("").build();
+                mockMvc.perform(
+                                post(BeerController.API_V1_BEER)
+                                                .accept(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(beer))
+                                                .contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.length()", is(3)));
         }
 }

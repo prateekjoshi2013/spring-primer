@@ -6,6 +6,8 @@ import java.util.UUID;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.services.BeerService;
 
+
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +51,8 @@ public class BeerController {
     }
 
     @PutMapping(API_V1_BEER_ID_PATH)
-    public ResponseEntity<BeerDTO> putMethodName(@PathVariable UUID beerId, @RequestBody BeerDTO beer) {
+    public ResponseEntity<BeerDTO> putMethodName(@NotNull @PathVariable UUID beerId,
+            @Validated @RequestBody BeerDTO beer) {
         BeerDTO updatedBeer = this.beerServiceImpl.updatedById(beerId, beer).get();
         HttpHeaders headers = new HttpHeaders();
         headers.add("location", API_V1_BEER + "/" + updatedBeer.getId());
