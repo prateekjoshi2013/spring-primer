@@ -210,4 +210,16 @@ public class BeerControllerTest {
                                 .andExpect(status().is4xxClientError())
                                 .andDo(MockMvcResultHandlers.print());
         }
+
+        @Test
+        void testConstraintViolationException() throws Exception {
+                BeerDTO beer = BeerDTO.builder().beerName("").build();
+                mockMvc.perform(
+                                post(BeerController.API_V1_BEER)
+                                                .accept(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(beer))
+                                                .contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.length()", is(1)));
+        }
 }
