@@ -19,4 +19,5 @@
         "org.hamcrest.Matchers.*",
         "org.assertj.core.api.Assertions.*"
     ],
+    "java.debug.settings.onBuildFailureProceed": true,
 }
