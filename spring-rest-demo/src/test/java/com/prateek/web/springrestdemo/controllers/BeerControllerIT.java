@@ -31,7 +31,7 @@ public class BeerControllerIT {
     BeerRepository beerRepository;
 
     @Autowired
-    BeerMapper beerMapper;
+    BeerMapper beerMapperImpl;
 
     @Transactional
     @Rollback
@@ -39,7 +39,7 @@ public class BeerControllerIT {
     void testUpdateNonExistingBeer() {
         UUID randomUUID = UUID.randomUUID();
         Beer beer = beerRepository.findAll().get(0);
-        BeerDTO beerDto = beerMapper.beerToBeerDto(beer);
+        BeerDTO beerDto = beerMapperImpl.beerToBeerDto(beer);
         beerDto.setId(null);
         beerDto.setVersion(null);
         beerDto.setBeerName("updated name");
@@ -54,7 +54,7 @@ public class BeerControllerIT {
     @Test
     void testUpdateExistingBeer() {
         Beer beer = beerRepository.findAll().get(0);
-        BeerDTO beerDto = beerMapper.beerToBeerDto(beer);
+        BeerDTO beerDto = beerMapperImpl.beerToBeerDto(beer);
         beerDto.setId(null);
         beerDto.setVersion(null);
         beerDto.setBeerName("updated name");
