@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +14,7 @@ public class BeerDTO {
 
     private UUID id;
     private Integer version;
+    @NotEmpty
     private String beerName;
     private BeerStyle beerStyle;
     private String upc;
