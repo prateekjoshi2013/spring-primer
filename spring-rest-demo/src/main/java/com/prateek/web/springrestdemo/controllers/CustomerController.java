@@ -10,7 +10,7 @@ import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
 import com.prateek.web.springrestdemo.model.CustomerDTO;
 import com.prateek.web.springrestdemo.services.CustomerService;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomerController {
     private static final String CUSTOMER_ID = "/{customerId}";
     public static final String API_V1_CUSTOMER = "/api/v1/customer";
     public static final String API_V1_CUSTOMER_PATH_ID = API_V1_CUSTOMER + CUSTOMER_ID;
-    private CustomerService customerServiceImpl;
+    private final CustomerService customerServiceImpl;
 
     @GetMapping(API_V1_CUSTOMER)
     List<CustomerDTO> listCustomers() {
