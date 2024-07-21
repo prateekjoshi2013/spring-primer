@@ -4,8 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.UuidGenerator.Style;
+
 import com.prateek.web.springrestdemo.model.BeerStyle;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
@@ -23,6 +27,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Beer {
     @Id
+    // new in hibernate 6:
+    @UuidGenerator(style = Style.RANDOM)
+    @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
     private UUID id;
     @Version
     private Integer version;
