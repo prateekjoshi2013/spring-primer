@@ -7,6 +7,8 @@ import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.services.BeerService;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 public class BeerController {
 

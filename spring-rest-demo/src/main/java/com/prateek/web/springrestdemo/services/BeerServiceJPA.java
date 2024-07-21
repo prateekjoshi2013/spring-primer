@@ -1,5 +1,6 @@
 package com.prateek.web.springrestdemo.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -7,6 +8,7 @@ import java.util.UUID;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.mappers.BeerMapper;
 import com.prateek.web.springrestdemo.model.BeerDTO;
@@ -23,8 +25,11 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public void deletedById(UUID beerId) {
-        // TODO Auto-generated method stub
-
+        if (beerRepository.existsById(beerId)) {
+            beerRepository.deleteById(beerId);
+        } else {
+            throw new NoBeerFoundException(beerId.toString());
+        }
     }
 
     @Override
@@ -44,14 +49,23 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
-        // TODO Auto-generated method stub
-        return null;
+        return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beer)));
     }
 
     @Override
     public Optional<BeerDTO> updatedById(UUID beerId, BeerDTO beer) {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        return beerRepository
+                .findById(beerId)
+                .map(oldBeer -> {
+                    oldBeer.setBeerName(beer.getBeerName());
+                    oldBeer.setBeerStyle(beer.getBeerStyle());
+                    oldBeer.setUpdateDate(LocalDateTime.now());
+                    oldBeer.setPrice(beer.getPrice());
+                    oldBeer.setUpc(beer.getUpc());
+                    oldBeer.setQuantityOnHand(beer.getQuantityOnHand());
+                    Beer updateBeer = beerRepository.save(oldBeer);
+                    return Optional.of(beerMapper.beerToBeerDto(updateBeer));
+                }).orElseThrow(() -> new NoBeerFoundException(beerId.toString()));
     }
 
 }
