@@ -1,6 +1,5 @@
 package com.prateek.web.springrestdemo.controllers;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 
-import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,11 +30,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleContraintValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Object> handleMethodArgumentNotValidErrors(MethodArgumentNotValidException ex) {
         List<Map<String, String>> collect = ex.getFieldErrors().stream()
                 .map(fieldError -> {
                     Map<String, String> errorMap = new HashMap<>();
                     errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
+                    return errorMap;
+                }).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleContraintValidationErrors(ConstraintViolationException ex) {
+        List<Map<String, String>> collect = ex.getConstraintViolations().stream()
+                .map(constraintViolation -> {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
                     return errorMap;
                 }).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
