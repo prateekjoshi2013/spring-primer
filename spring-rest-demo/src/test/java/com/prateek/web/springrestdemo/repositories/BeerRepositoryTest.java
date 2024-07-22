@@ -1,6 +1,7 @@
 package com.prateek.web.springrestdemo.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 
@@ -10,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.model.BeerStyle;
+
+import jakarta.validation.ConstraintViolationException;
 
 @DataJpaTest
 public class BeerRepositoryTest {
@@ -36,13 +39,14 @@ public class BeerRepositoryTest {
 
     @Test
     void testSaveBeerConstraintViolation() {
-        Beer savedBeer = beerRepository.save(Beer.builder().beerName("My Beer").build());
-        // the flush operation happens asynchronously and actually saves the entity to
-        // db and that is when the validation happens
-        // if we do not add explicitly flush here the test finishes before the actual
-        // flush operation happens
-        beerRepository.flush();
-        assertThat(savedBeer).isNotNull();
-        assertThat(savedBeer.getId()).isNotNull();
+        ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> {
+            Beer savedBeer = beerRepository.save(Beer.builder().beerName("My Beer").build());
+            // the flush operation happens asynchronously and actually saves the entity to
+            // db and that is when the validation happens
+            // if we do not add explicitly flush here the test finishes before the actual
+            // flush operation happens
+            beerRepository.flush();
+        });
+        assertThat(ex).isNotNull();
     }
 }
