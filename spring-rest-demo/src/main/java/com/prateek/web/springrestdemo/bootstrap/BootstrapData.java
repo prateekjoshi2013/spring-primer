@@ -72,8 +72,12 @@ public class BootstrapData implements CommandLineRunner {
 
         @Override
         public void run(String... args) throws Exception {
-                beerRepository.saveAll(beers);
-                customerRepository.saveAll(customers);
+                if (beerRepository.count() == 0) {
+                        beerRepository.saveAll(beers);
+                }
+                if (customerRepository.count() == 0) {
+                        customerRepository.saveAll(customers);
+                }
         }
 
 }

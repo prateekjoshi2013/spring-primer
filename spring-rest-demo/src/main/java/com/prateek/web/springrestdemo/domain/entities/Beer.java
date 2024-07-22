@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.annotations.UuidGenerator.Style;
+import org.hibernate.type.SqlTypes;
 
 import com.prateek.web.springrestdemo.model.BeerStyle;
 
@@ -33,7 +35,8 @@ public class Beer {
     @Id
     // new in hibernate 6:
     @UuidGenerator(style = Style.RANDOM)
-    @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID id;
     @Version
     private Integer version;
@@ -42,7 +45,7 @@ public class Beer {
     @Column(length = 50) // hibernate uses default varchar column size to 255 unless length is specified
     private String beerName;
     @NotNull
-    @Column(length = 10, columnDefinition = "varchar", updatable = false, nullable = false)
+    @Column(length = 10, columnDefinition = "varchar(10)", updatable = false, nullable = false)
     private BeerStyle beerStyle;
     @NotEmpty
     @Size(min = 1, max = 10)
