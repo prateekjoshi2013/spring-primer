@@ -13,6 +13,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,10 +36,14 @@ public class Beer {
     private UUID id;
     @Version
     private Integer version;
+    @NotEmpty
     private String beerName;
+    @NotNull
     private BeerStyle beerStyle;
+    @NotEmpty
     private String upc;
     private Integer quantityOnHand;
+    @DecimalMin(value = "0.01", inclusive = true, message = "Price must be greater than 0")
     private BigDecimal price;
     private LocalDateTime createdDate;
     private LocalDateTime updateDate;
