@@ -101,10 +101,17 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<version>9.0.0</version>
 		</dependency>
+		<!-- flyway migration tool -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
 			<version>10.16.0</version>
+		</dependency>
+		<!-- to read and write csv  -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.9</version>
 		</dependency>
 	</dependencies>
 
