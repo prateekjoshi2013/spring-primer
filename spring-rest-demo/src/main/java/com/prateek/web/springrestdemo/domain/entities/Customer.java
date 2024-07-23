@@ -3,8 +3,10 @@ package com.prateek.web.springrestdemo.domain.entities;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.annotations.UuidGenerator.Style;
 import org.hibernate.type.SqlTypes;
@@ -37,6 +39,8 @@ public class Customer {
     private Integer version;
     private String customerName;
     private String email;
+    @CreationTimestamp
     private LocalDateTime createdDate;
+    @UpdateTimestamp
     private LocalDateTime lastModifiedDate;
 }
