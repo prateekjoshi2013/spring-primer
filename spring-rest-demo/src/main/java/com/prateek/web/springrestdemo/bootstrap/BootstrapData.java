@@ -1,5 +1,6 @@
 package com.prateek.web.springrestdemo.bootstrap;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,12 +9,15 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.entities.Customer;
+import com.prateek.web.springrestdemo.mappers.BeerCsvMapper;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.repositories.BeerRepository;
 import com.prateek.web.springrestdemo.repositories.CustomerRepository;
+import com.prateek.web.springrestdemo.services.BeerCsvService;
 
 import lombok.AllArgsConstructor;
 
@@ -23,6 +27,8 @@ public class BootstrapData implements CommandLineRunner {
 
         private BeerRepository beerRepository;
         private CustomerRepository customerRepository;
+        private BeerCsvService beerCsvService;
+        private BeerCsvMapper beerCsvMapper;
         private static final List<Customer> customers = Stream.of(
                         Customer.builder()
                                         .customerName("John")
@@ -72,6 +78,18 @@ public class BootstrapData implements CommandLineRunner {
 
         @Override
         public void run(String... args) throws Exception {
+                if (beerRepository.count() < 10) {
+                        File file = ResourceUtils.getFile("classpath:csvdata/beers.csv");
+                        List<Beer> beers = beerCsvService.convertCSV(file).stream()
+                                        .map(beerCsv -> {
+                                                Beer beer = beerCsvMapper.carToCarDto(beerCsv);
+                                                beer.setPrice(BigDecimal.TEN);
+                                                return beer;
+                                        })
+                                        .toList();
+                        beerRepository.saveAll(beers);
+                }
+
                 if (beerRepository.count() == 0) {
                         beerRepository.saveAll(beers);
                 }
