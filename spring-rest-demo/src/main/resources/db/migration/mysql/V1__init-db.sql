@@ -1,7 +1,4 @@
-
-    drop table if exists beer;
-
-    drop table if exists customer;
+    use mydb;
 
     create table beer (
         beer_style varchar(10) not null check (beer_style between 0 and 9),
