@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.prateek.web.springrestdemo.model.BeerDTO;
+import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.services.BeerService;
 
 import jakarta.validation.constraints.NotNull;
@@ -33,8 +34,10 @@ public class BeerController {
     private final BeerService beerServiceImpl;
 
     @GetMapping(API_V1_BEER)
-    public List<BeerDTO> listBeers(@RequestParam(name = "beerName", required = false) String beerName) {
-        return beerServiceImpl.listBeers(beerName);
+    public List<BeerDTO> listBeers(@RequestParam(name = "beerName", required = false) String beerName,
+            @RequestParam(name = "beerStyle", required = false) BeerStyle beerStyle,
+            @RequestParam(name = "showInventory", required = false) Boolean showInventory) {
+        return beerServiceImpl.listBeers(beerName, beerStyle, showInventory);
     }
 
     @GetMapping(API_V1_BEER_ID_PATH)
