@@ -54,7 +54,7 @@ public class BeerController {
     }
 
     @PutMapping(API_V1_BEER_ID_PATH)
-    public ResponseEntity<BeerDTO> putMethodName(@NotNull @PathVariable UUID beerId,
+    public ResponseEntity<BeerDTO> updateBeer(@NotNull @PathVariable UUID beerId,
             @Validated @RequestBody BeerDTO beer) {
         BeerDTO updatedBeer = this.beerServiceImpl.updatedById(beerId, beer).get();
         HttpHeaders headers = new HttpHeaders();

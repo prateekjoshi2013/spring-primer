@@ -110,7 +110,7 @@ public class BeerControllerIT {
         beerDto.setVersion(null);
         beerDto.setBeerName("updated name");
         Exception exception = assertThrows(NoBeerFoundException.class, () -> {
-            beerController.putMethodName(randomUUID, beerDto);
+            beerController.updateBeer(randomUUID, beerDto);
         });
         assertEquals(exception.getMessage(), "Beer with id: " + randomUUID + " not found");
     }
@@ -124,7 +124,7 @@ public class BeerControllerIT {
         beerDto.setId(null);
         beerDto.setVersion(null);
         beerDto.setBeerName("updated name");
-        beerController.putMethodName(beer.getId(), beerDto);
+        beerController.updateBeer(beer.getId(), beerDto);
         beerRepository.findById(beer.getId())
                 .ifPresent(updatedBeer -> assertEquals(updatedBeer.getBeerName(), "updated name"));
         ;
