@@ -2,6 +2,7 @@ package com.prateek.web.springrestdemo.domain.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,6 +17,7 @@ import com.prateek.web.springrestdemo.model.BeerStyle;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
@@ -59,5 +61,6 @@ public class Beer {
     private LocalDateTime createdDate;
     @UpdateTimestamp
     private LocalDateTime updateDate;
-
+    @OneToMany(mappedBy = "beer")
+    private Set<BeerOrderLine> beerOrderLines;
 }
