@@ -48,7 +48,7 @@ public class BeerOrderRepositoryTest {
          * LazyInitializationException
          * - The most common scenario for LazyInitializationException is when we try to
          * access a lazily initialized collection or proxy object after the Hibernate
-         * session in this case it is Customer.getBeerOrders() 
+         * session in this case it is Customer.getBeerOrders()
          * that fetched the parent entity has already been closed.
          * - Always try to persist an entity object before making any updates to its
          * properties
@@ -56,7 +56,11 @@ public class BeerOrderRepositoryTest {
          * - nested customer will have beer orders after saveAndFlush but not with just
          * save
          */
-        BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
+        // BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
+
+        // save and flush has performance overhead so we use custom association logic
+        // in BeerOrder and Customer to populate the relationships
+        BeerOrder savedBeerOrder = beerOrderRepository.save(beerOrder);
         assertEquals(savedBeerOrder.getCustomer().getBeerOrders().size(), 1);
         savedBeerOrder.getCustomer().getBeerOrders().stream().findFirst()
                 .ifPresent(found -> {

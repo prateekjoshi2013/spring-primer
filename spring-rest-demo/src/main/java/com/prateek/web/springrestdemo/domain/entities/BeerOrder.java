@@ -1,8 +1,5 @@
 package com.prateek.web.springrestdemo.domain.entities;
 
-import java.math.BigInteger;
-import java.security.Timestamp;
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -20,7 +17,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Version;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,8 +27,19 @@ import lombok.Setter;
 @Setter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class BeerOrder {
+    // used by builder of lombok so we need to have setCustomer logic here
+    public BeerOrder(UUID id, Integer version, LocalDateTime createdDate, LocalDateTime lastModifiedDate,
+            String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines) {
+        this.id = id;
+        this.version = version;
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.customerRef = customerRef;
+        this.setCustomer(customer);
+        this.beerOrderLines = beerOrderLines;
+    }
+
     @Id
     @UuidGenerator(style = Style.RANDOM)
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -55,6 +62,13 @@ public class BeerOrder {
     private String customerRef;
     @ManyToOne
     private Customer customer;
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+        customer.getBeerOrders().add(this);
+    }
+
     @OneToMany(mappedBy = "beerOrder")
     Set<BeerOrderLine> beerOrderLines;
+
 }
