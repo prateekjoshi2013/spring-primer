@@ -16,6 +16,7 @@ import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,4 +49,6 @@ public class BeerOrder {
     }
 
     private String customerRef;
+    @ManyToOne
+    private Customer customer;
 }
