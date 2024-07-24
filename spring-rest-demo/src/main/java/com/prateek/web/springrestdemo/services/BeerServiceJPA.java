@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
@@ -40,11 +41,13 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> listBeers() {
-        return beerRepository
-                .findAll()
+    public List<BeerDTO> listBeers(String beerName) {
+        return Optional.ofNullable(beerName)
+                .filter(StringUtils::hasText)
+                .map(name -> beerRepository.findAllByBeerNameIsLikeIgnoreCase("%" + name + "%"))
+                .orElse(beerRepository.findAll())
                 .stream()
-                .map(beer -> beerMapper.beerToBeerDto(beer)).toList();
+                .map(beerMapper::beerToBeerDto).toList();
     }
 
     @Override

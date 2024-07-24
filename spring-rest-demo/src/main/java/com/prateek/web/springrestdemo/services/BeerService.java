@@ -7,7 +7,7 @@ import java.util.UUID;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 
 public interface BeerService {
-    List<BeerDTO> listBeers();
+    List<BeerDTO> listBeers(String beerName);
 
     Optional<BeerDTO> getBeerById(UUID id);
 

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.model.BeerDTO;
@@ -56,9 +57,13 @@ public class BeerServiceImpl implements BeerService {
                                         .build())
                         .collect(Collectors.toMap(beer -> beer.getId(), beer -> beer));
 
-        public List<BeerDTO> listBeers() {
+        public List<BeerDTO> listBeers(String beerName) {
                 log.info("sending the list of beers");
-                return this.beerMap.values().stream().toList();
+                return Optional.ofNullable(beerName)
+                                .filter(StringUtils::hasText)
+                                .map(name -> this.beerMap.values().stream()
+                                                .filter(beer -> beer.getBeerName().equals(beerName)))
+                                .orElse(this.beerMap.values().stream()).toList();
         }
 
         @Override
