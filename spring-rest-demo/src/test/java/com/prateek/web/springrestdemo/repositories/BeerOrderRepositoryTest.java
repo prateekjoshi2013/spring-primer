@@ -2,6 +2,7 @@ package com.prateek.web.springrestdemo.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.entities.BeerOrder;
+import com.prateek.web.springrestdemo.domain.entities.BeerOrderShipment;
 import com.prateek.web.springrestdemo.domain.entities.Customer;
 
 import jakarta.transaction.Transactional;
@@ -41,6 +43,8 @@ public class BeerOrderRepositoryTest {
         BeerOrder beerOrder = BeerOrder.builder()
                 .customerRef("Test order")
                 .customer(testCustomer)
+                .beerOrderShipment(BeerOrderShipment.builder().trackingNumber("123445aqiue")
+                        .build())
                 .build();
 
         /**
@@ -66,6 +70,8 @@ public class BeerOrderRepositoryTest {
                 .ifPresent(found -> {
                     assertEquals(found.getCustomerRef(), "Test order");
                 });
+        assertNotNull(savedBeerOrder.getBeerOrderShipment().getId());
+        assertEquals(savedBeerOrder.getBeerOrderShipment().getTrackingNumber(), "123445aqiue");
 
     }
 }
