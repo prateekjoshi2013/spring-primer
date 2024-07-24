@@ -6,11 +6,11 @@ import java.util.UUID;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.services.BeerService;
 
-
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,9 +32,9 @@ public class BeerController {
     public static final String API_V1_BEER_ID_PATH = API_V1_BEER + CUSTOMER_ID;
     private final BeerService beerServiceImpl;
 
-    @RequestMapping(API_V1_BEER)
-    public List<BeerDTO> listBeers() {
-        return beerServiceImpl.listBeers();
+    @GetMapping(API_V1_BEER)
+    public List<BeerDTO> listBeers(@RequestParam(name = "beerName", required = false) String beerName) {
+        return beerServiceImpl.listBeers(beerName);
     }
 
     @GetMapping(API_V1_BEER_ID_PATH)
