@@ -51,6 +51,16 @@ public class Category {
     @JoinTable(name = "beer_category", joinColumns = @JoinColumn(name = "category_id"), inverseJoinColumns = @JoinColumn(name = "beer_id"))
     private Set<Beer> beers = new HashSet<>();
 
+    public void addBeer(Beer beer) {
+        this.getBeers().add(beer);
+        beer.getCategories().add(this);
+    }
+
+    public void removeBeer(Beer beer) {
+        this.getBeers().remove(beer);
+        beer.getCategories().remove(this);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
