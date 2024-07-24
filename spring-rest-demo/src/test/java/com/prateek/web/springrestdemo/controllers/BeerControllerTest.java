@@ -151,7 +151,7 @@ public class BeerControllerTest {
         @SneakyThrows
         @Test
         void testListBeers() {
-                given(beerService.listBeers(null)).willReturn(mockedBeers);
+                given(beerService.listBeers(null, null, null)).willReturn(mockedBeers);
 
                 mockMvc.perform(get(BeerController.API_V1_BEER)
                                 .accept(MediaType.APPLICATION_JSON))

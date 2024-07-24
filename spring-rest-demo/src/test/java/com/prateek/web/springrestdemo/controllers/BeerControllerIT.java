@@ -2,6 +2,7 @@ package com.prateek.web.springrestdemo.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,6 +70,17 @@ public class BeerControllerIT {
                 .andExpect(jsonPath("$.size()", is(336)));
     }
 
+    @Test
+    @SneakyThrows
+    void testListBeersByNameAndByBeer() {
+        mockMvc.perform(get(BeerController.API_V1_BEER)
+                .queryParam("beerName", "IPA")
+                .queryParam("beerStyle", "IPA"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(310)))
+                .andExpect(jsonPath("$[0].quantityOnHand", nullValue()));
+    }
+
     @SneakyThrows
     @Test
     void testSaveBeerEndToEnd() {
@@ -131,14 +143,14 @@ public class BeerControllerIT {
     @Test
     void testByGetId() {
 
-        BeerDTO beerDto = beerController.listBeers(null).get(0);
+        BeerDTO beerDto = beerController.listBeers(null, null, false).get(0);
         BeerDTO beer = beerController.getBeerById(beerDto.getId());
         assertEquals(beerDto.getId(), beer.getId());
     }
 
     @Test
     void testListBeers() {
-        List<BeerDTO> beers = beerController.listBeers(null);
+        List<BeerDTO> beers = beerController.listBeers(null, null, false);
         assertThat(beers.size()).isEqualTo(2410);
     }
 
@@ -147,7 +159,7 @@ public class BeerControllerIT {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> dtos = beerController.listBeers(null);
+        List<BeerDTO> dtos = beerController.listBeers(null, null, false);
         assertThat(dtos.size()).isEqualTo(0);
     }
 
