@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -34,7 +34,6 @@ import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.repositories.BeerRepository;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 
 @SpringBootTest
@@ -60,6 +59,14 @@ public class BeerControllerIT {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
+
+    @Test
+    @SneakyThrows
+    void testListBeersByName() {
+        mockMvc.perform(get(BeerController.API_V1_BEER)
+                .queryParam("beerName", "IPA")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(336)));
     }
 
     @SneakyThrows
@@ -124,14 +131,14 @@ public class BeerControllerIT {
     @Test
     void testByGetId() {
 
-        BeerDTO beerDto = beerController.listBeers().get(0);
+        BeerDTO beerDto = beerController.listBeers(null).get(0);
         BeerDTO beer = beerController.getBeerById(beerDto.getId());
         assertEquals(beerDto.getId(), beer.getId());
     }
 
     @Test
     void testListBeers() {
-        List<BeerDTO> beers = beerController.listBeers();
+        List<BeerDTO> beers = beerController.listBeers(null);
         assertThat(beers.size()).isEqualTo(2410);
     }
 
@@ -140,7 +147,7 @@ public class BeerControllerIT {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> dtos = beerController.listBeers();
+        List<BeerDTO> dtos = beerController.listBeers(null);
         assertThat(dtos.size()).isEqualTo(0);
     }
 
