@@ -9,9 +9,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.model.BeerStyle;
@@ -57,13 +60,32 @@ public class BeerServiceImpl implements BeerService {
                                         .build())
                         .collect(Collectors.toMap(beer -> beer.getId(), beer -> beer));
 
-        public List<BeerDTO> listBeers(String beerName) {
+        public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory) {
                 log.info("sending the list of beers");
-                return Optional.ofNullable(beerName)
-                                .filter(StringUtils::hasText)
-                                .map(name -> this.beerMap.values().stream()
-                                                .filter(beer -> beer.getBeerName().equals(beerName)))
-                                .orElse(this.beerMap.values().stream()).toList();
+                List<BeerDTO> results = null;
+                if (StringUtils.hasText(beerName) && beerStyle != null) {
+                        results = beerMap.values().stream().filter(beerDto -> beerDto.getBeerName().contains(beerName)
+                                        && beerDto.getBeerStyle() == beerStyle).toList();
+                } else if (StringUtils.hasText(beerName) && beerStyle == null) {
+                        results = beerMap.values().stream().filter(beerDto -> beerDto.getBeerName().contains(beerName))
+                                        .toList();
+                } else if (!StringUtils.hasText(beerName) && beerStyle != null) {
+                        results = beerMap.values().stream().filter(beerDto -> beerDto.getBeerStyle() == beerStyle)
+                                        .toList();
+                } else {
+                        results = beerMap.values().stream().toList();
+                }
+
+                return results.stream()
+                                .map(beer -> {
+                                        if (showInvetory == null || !showInvetory) {
+                                                beer.setQuantityOnHand(null);
+                                                return beer;
+                                        } else {
+                                                return beer;
+                                        }
+                                }).toList();
+
         }
 
         @Override

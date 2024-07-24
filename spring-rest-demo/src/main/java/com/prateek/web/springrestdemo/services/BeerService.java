@@ -5,9 +5,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.prateek.web.springrestdemo.model.BeerDTO;
+import com.prateek.web.springrestdemo.model.BeerStyle;
 
 public interface BeerService {
-    List<BeerDTO> listBeers(String beerName);
+    List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory);
 
     Optional<BeerDTO> getBeerById(UUID id);
 
