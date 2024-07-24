@@ -2,7 +2,7 @@
     "workbench.iconTheme": "material-icon-theme",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
-    "java.autobuild.enabled": true,
+    // "java.autobuild.enabled": true,
     "java.completion.favoriteStaticMembers": [
         "org.junit.Assert.*",
         "org.junit.Assume.*",
