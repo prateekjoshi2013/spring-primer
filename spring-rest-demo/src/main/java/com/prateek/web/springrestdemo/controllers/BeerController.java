@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +35,12 @@ public class BeerController {
     private final BeerService beerServiceImpl;
 
     @GetMapping(API_V1_BEER)
-    public List<BeerDTO> listBeers(@RequestParam(name = "beerName", required = false) String beerName,
+    public Page<BeerDTO> listBeers(@RequestParam(name = "beerName", required = false) String beerName,
             @RequestParam(name = "beerStyle", required = false) BeerStyle beerStyle,
-            @RequestParam(name = "showInventory", required = false) Boolean showInventory) {
-        return beerServiceImpl.listBeers(beerName, beerStyle, showInventory);
+            @RequestParam(name = "showInventory", required = false) Boolean showInventory,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber) {
+        return beerServiceImpl.listBeers(beerName, beerStyle, showInventory, 1, 25);
     }
 
     @GetMapping(API_V1_BEER_ID_PATH)
