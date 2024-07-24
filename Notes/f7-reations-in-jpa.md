@@ -94,3 +94,8 @@
 ### In Application
 
 ![alt text](ERD.png)
+
+### Entity Relationships
+
+https://www.baeldung.com/jpa-hibernate-associations
+
