@@ -19,10 +19,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -67,7 +69,7 @@ public class BeerControllerIT {
     void testListBeersByName() {
         mockMvc.perform(get(BeerController.API_V1_BEER)
                 .queryParam("beerName", "IPA")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(336)));
+                .andExpect(jsonPath("$.totalElements", is(336)));
     }
 
     @Test
@@ -77,8 +79,9 @@ public class BeerControllerIT {
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", "IPA"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(310)))
-                .andExpect(jsonPath("$[0].quantityOnHand", nullValue()));
+                .andExpect(jsonPath("$.totalElements", is(310)))
+                .andExpect(jsonPath("$.content[0].quantityOnHand", nullValue()))
+                .andDo(MockMvcResultHandlers.print());
     }
 
     @SneakyThrows
@@ -143,15 +146,16 @@ public class BeerControllerIT {
     @Test
     void testByGetId() {
 
-        BeerDTO beerDto = beerController.listBeers(null, null, false).get(0);
+        BeerDTO beerDto = beerController.listBeers(null, null, false, 1, 25).toList().get(0);
         BeerDTO beer = beerController.getBeerById(beerDto.getId());
         assertEquals(beerDto.getId(), beer.getId());
     }
 
     @Test
     void testListBeers() {
-        List<BeerDTO> beers = beerController.listBeers(null, null, false);
-        assertThat(beers.size()).isEqualTo(2410);
+        Page<BeerDTO> beers = beerController.listBeers(null, null, false, 1, 25);
+        assertThat(beers.getContent().size()).isEqualTo(25);
+        assertThat(beers.getTotalElements()).isEqualTo(2410);
     }
 
     @Rollback
@@ -159,8 +163,8 @@ public class BeerControllerIT {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        List<BeerDTO> dtos = beerController.listBeers(null, null, false);
-        assertThat(dtos.size()).isEqualTo(0);
+        Page<BeerDTO> dtos = beerController.listBeers(null, null, false, 1, 25);
+        assertThat(dtos.getContent().size()).isEqualTo(0);
     }
 
     @Rollback

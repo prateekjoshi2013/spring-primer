@@ -28,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -151,7 +152,7 @@ public class BeerControllerTest {
         @SneakyThrows
         @Test
         void testListBeers() {
-                given(beerService.listBeers(null, null, null)).willReturn(mockedBeers);
+                given(beerService.listBeers(null, null, null, 1, 25)).willReturn(new PageImpl<>(mockedBeers));
 
                 mockMvc.perform(get(BeerController.API_V1_BEER)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -159,7 +160,7 @@ public class BeerControllerTest {
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                                 // jsonpath documentation : https://github.com/json-path/JsonPath
-                                .andExpect(jsonPath("$.length()", is(3)));
+                                .andExpect(jsonPath("$.totalElements", is(3)));
         }
 
         @SneakyThrows
