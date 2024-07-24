@@ -16,6 +16,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Version;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +31,8 @@ import lombok.Setter;
 public class BeerOrder {
     // used by builder of lombok so we need to have setCustomer logic here
     public BeerOrder(UUID id, Integer version, LocalDateTime createdDate, LocalDateTime lastModifiedDate,
-            String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines) {
+            String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines,
+            BeerOrderShipment beerOrderShipment) {
         this.id = id;
         this.version = version;
         this.createdDate = createdDate;
@@ -38,6 +40,7 @@ public class BeerOrder {
         this.customerRef = customerRef;
         this.setCustomer(customer);
         this.beerOrderLines = beerOrderLines;
+        this.beerOrderShipment = beerOrderShipment;
     }
 
     @Id
@@ -70,5 +73,8 @@ public class BeerOrder {
 
     @OneToMany(mappedBy = "beerOrder")
     Set<BeerOrderLine> beerOrderLines;
+
+    @OneToOne
+    BeerOrderShipment beerOrderShipment;
 
 }
