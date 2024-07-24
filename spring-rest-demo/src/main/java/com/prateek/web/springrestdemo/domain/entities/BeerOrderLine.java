@@ -16,6 +16,7 @@ import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -54,5 +55,9 @@ public class BeerOrderLine {
     private Integer quantityAllocated = 0;
     @ManyToOne
     private BeerOrder beerOrder;
+
+    @ManyToOne
+    @JoinColumn(name = "beer_id")
+    private Beer beer;
 
 }
