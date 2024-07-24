@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -35,7 +36,8 @@ public class BeerServiceJPA implements BeerService {
         int queryPageNumer = Optional.ofNullable(pageNumber).map(pgn -> pgn - 1).orElse(DEFAULT_PAGE_NUMBER);
         int queryPageSize = Optional.ofNullable(pageSize).map(pgs -> pgs > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : pgs)
                 .orElse(DEFAULT_PAGE_SIZE);
-        return PageRequest.of(queryPageNumer, queryPageSize);
+        Sort sort = Sort.by(Sort.Order.asc("beerName"));
+        return PageRequest.of(queryPageNumer, queryPageSize, sort);
     }
 
     @Override
