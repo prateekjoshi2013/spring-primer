@@ -90,3 +90,7 @@
 - It is not enforced nor generated if missing
 
 - When using schema migration tools like Liquibase or Flyway it is not needed
+
+### In Application
+
+![alt text](ERD.png)
