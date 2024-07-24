@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +27,17 @@ public class BeerServiceJPA implements BeerService {
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
 
+    private static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final int DEFAULT_PAGE_SIZE = 25;
+    private static final int MAX_PAGE_SIZE = 1000;
+
+    public PageRequest buildPageRequest(Integer pageNumber, Integer pageSize) {
+        int queryPageNumer = Optional.ofNullable(pageNumber).map(pgn -> pgn - 1).orElse(DEFAULT_PAGE_NUMBER);
+        int queryPageSize = Optional.ofNullable(pageSize).map(pgs -> pgs > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : pgs)
+                .orElse(DEFAULT_PAGE_SIZE);
+        return PageRequest.of(queryPageNumer, queryPageSize);
+    }
+
     @Override
     public void deletedById(UUID beerId) {
         if (beerRepository.existsById(beerId)) {
@@ -42,21 +55,22 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory) {
-        List<Beer> results = null;
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory, Integer pageNumber,
+            Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize);
+        Page<Beer> beerPage;
         if (StringUtils.hasText(beerName) && beerStyle != null) {
-            results = beerRepository
-                    .findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle("%" + beerName + "%", beerStyle);
+            beerPage = beerRepository
+                    .findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle("%" + beerName + "%", beerStyle, pageRequest);
         } else if (StringUtils.hasText(beerName) && beerStyle == null) {
-            results = beerRepository
-                    .findAllByBeerNameIsLikeIgnoreCase("%" + beerName + "%");
+            beerPage = beerRepository
+                    .findAllByBeerNameIsLikeIgnoreCase("%" + beerName + "%", pageRequest);
         } else if (!StringUtils.hasText(beerName) && beerStyle != null) {
-            results = beerRepository.findAllByBeerStyle(beerStyle);
+            beerPage = beerRepository.findAllByBeerStyle(beerStyle, pageRequest);
         } else {
-            results = beerRepository.findAll().stream().toList();
+            beerPage = beerRepository.findAll(pageRequest);
         }
-
-        return results.stream()
+        return beerPage
                 .map(beerMapper::beerToBeerDto)
                 .map(beer -> {
                     if (showInvetory == null || !showInvetory) {
@@ -65,7 +79,7 @@ public class BeerServiceJPA implements BeerService {
                     } else {
                         return beer;
                     }
-                }).toList();
+                });
     }
 
     @Override

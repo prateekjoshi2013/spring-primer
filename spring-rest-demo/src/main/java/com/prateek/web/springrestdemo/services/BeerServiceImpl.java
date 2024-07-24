@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -60,7 +62,8 @@ public class BeerServiceImpl implements BeerService {
                                         .build())
                         .collect(Collectors.toMap(beer -> beer.getId(), beer -> beer));
 
-        public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory) {
+        public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory, Integer pageNumber,
+                        Integer pageSize) {
                 log.info("sending the list of beers");
                 List<BeerDTO> results = null;
                 if (StringUtils.hasText(beerName) && beerStyle != null) {
@@ -76,7 +79,7 @@ public class BeerServiceImpl implements BeerService {
                         results = beerMap.values().stream().toList();
                 }
 
-                return results.stream()
+                return new PageImpl<>(results.stream()
                                 .map(beer -> {
                                         if (showInvetory == null || !showInvetory) {
                                                 beer.setQuantityOnHand(null);
@@ -84,7 +87,7 @@ public class BeerServiceImpl implements BeerService {
                                         } else {
                                                 return beer;
                                         }
-                                }).toList();
+                                }).toList());
 
         }
 
