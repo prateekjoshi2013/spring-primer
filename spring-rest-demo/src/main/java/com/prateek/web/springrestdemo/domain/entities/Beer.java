@@ -53,7 +53,7 @@ public class Beer {
     @Column(length = 50) // hibernate uses default varchar column size to 255 unless length is specified
     private String beerName;
     @NotNull
-    @Column(length = 10, columnDefinition = "varchar(10)", updatable = false, nullable = false)
+    @JdbcTypeCode(value = SqlTypes.INTEGER)
     private BeerStyle beerStyle;
     @NotEmpty
     @Size(min = 1, max = 10)
