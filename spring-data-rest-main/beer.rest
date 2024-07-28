@@ -1,0 +1,53 @@
+### Beer
+
+GET http://localhost:8080/api/v1/beer
+
+### Beer
+
+GET http://localhost:8080/api/v1/beer?beerStyle=ALE&size=2
+
+### 
+
+GET http://localhost:8080/api/v1/beer/f5ff3054-98d2-4b6e-b4fa-eb8d1c5a94df
+
+### 
+
+POST http://localhost:8080/api/v1/beer
+content-type: application/json
+
+{
+    "beerName": "Prateek beer",
+    "beerStyle": "PALE_ALE",
+    "upc": "9122089364369",
+    "quantityOnHand": 2601,
+    "price": 39.32
+}
+
+### 
+
+GET http://localhost:8080/api/v1/beer/4ea82763-4538-4ee5-9ace-1a3464137be1
+
+### 
+
+PATCH http://localhost:8080/api/v1/beer/4ea82763-4538-4ee5-9ace-1a3464137be1
+content-type: application/json
+If-Match: 1
+
+{
+    "beerName": "Prateek beer 3"
+}
+
+
+### 
+
+DELETE http://localhost:8080/api/v1/beer/4ea82763-4538-4ee5-9ace-1a3464137be1
+content-type: application/json
+If-Match: 2
+
+{
+    "beerName": "Prateek beer 3"
+}
+
+### 
+
+http://localhost:8080/api/v1/beer/search/findAllByBeerName?beerName=Very GGGreenn
