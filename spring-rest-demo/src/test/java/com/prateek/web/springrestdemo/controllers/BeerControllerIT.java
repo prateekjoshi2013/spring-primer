@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,6 +40,7 @@ import com.prateek.web.springrestdemo.repositories.BeerRepository;
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 
+@EnabledIf(value = "#{{'localmysql', 'default'}.contains(environment.getActiveProfiles()[0])}", loadContext = true)
 @SpringBootTest
 public class BeerControllerIT {
 

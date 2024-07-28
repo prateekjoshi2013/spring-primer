@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import com.prateek.web.springrestdemo.domain.entities.Customer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoCustomerException;
@@ -19,6 +20,7 @@ import com.prateek.web.springrestdemo.repositories.CustomerRepository;
 
 import jakarta.transaction.Transactional;
 
+@EnabledIf(value = "#{{'default','localmysql'}.contains(environment.getActiveProfiles()[0])}", loadContext = true)
 @SpringBootTest
 public class CustomerControllerIT {
     @Autowired

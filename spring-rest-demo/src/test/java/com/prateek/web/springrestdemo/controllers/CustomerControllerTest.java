@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +38,7 @@ import com.prateek.web.springrestdemo.services.CustomerService;
 
 import lombok.SneakyThrows;
 
+@EnabledIf(value = "#{{'default'}.contains(environment.getActiveProfiles()[0])}", loadContext = false)
 @WebMvcTest(CustomerController.class)
 public class CustomerControllerTest {
 

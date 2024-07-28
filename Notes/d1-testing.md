@@ -373,3 +373,40 @@ public class MyControllerTests {
 ```
 
 - JsonPath documentation : https://github.com/json-path/JsonPath
+
+### Conditionally run tests based on profiles using @EnabledIf
+
+- More annotations on : https://www.baeldung.com/junit-5-conditional-test-execution
+
+- If we want to execute our tests under different active profiles, we can evaluate the value or expression attributes with the SPEL function:
+
+```java
+    #{{'test', 'prod'}.contains(environment.getActiveProfiles()[0])}
+```
+
+- Let’s break down the function:
+
+- {‘test’,’prod’} defines a set of two profile names defined in our Spring application
+
+- .contains{environment-getActiveProfiles()[0]} checks whether the first element of the array is contained within the set defined earlier
+
+- So let’s add to our test class the @EnableIf annotation:
+
+```java
+    @SpringBootTest(classes = ActiveProfileApplication.class)
+    @EnabledIf(value = "#{{'test', 'prod'}.contains(environment.getActiveProfiles()[0])}", loadContext = true)
+    @ActiveProfiles(value = "test")
+    public class MultipleActiveProfileUnitTest {
+        @Value("${profile.property.value}")
+        private String propertyString;
+
+        @Autowired
+        private Environment env;
+
+        @Test
+        void whenDevIsActive_thenValueShouldBeKeptFromDedicatedApplicationYaml() {
+            String currentProfile = env.getActiveProfiles()[0];
+            Assertions.assertEquals(String.format("This the the application-%s.yaml file", currentProfile), propertyString);
+        }
+    }
+```

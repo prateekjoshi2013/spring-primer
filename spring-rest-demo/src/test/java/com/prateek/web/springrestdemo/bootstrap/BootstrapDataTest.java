@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import com.prateek.web.springrestdemo.mappers.BeerCsvMapper;
 import com.prateek.web.springrestdemo.mappers.BeerCsvMapperImpl;
@@ -16,7 +17,7 @@ import com.prateek.web.springrestdemo.services.BeerCsvService;
 import com.prateek.web.springrestdemo.services.BeerCsvServiceImpl;
 
 import lombok.SneakyThrows;
-
+@EnabledIf(value = "#{{'default'}.contains(environment.getActiveProfiles()[0])}", loadContext = false)
 @DataJpaTest
 @Import({ BeerCsvServiceImpl.class, BeerCsvMapperImpl.class })
 public class BootstrapDataTest {
