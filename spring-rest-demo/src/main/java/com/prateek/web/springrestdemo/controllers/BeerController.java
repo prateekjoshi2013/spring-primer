@@ -40,7 +40,7 @@ public class BeerController {
             @RequestParam(name = "showInventory", required = false) Boolean showInventory,
             @RequestParam(name = "pageSize", required = false) Integer pageSize,
             @RequestParam(name = "pageNumber", required = false) Integer pageNumber) {
-        return beerServiceImpl.listBeers(beerName, beerStyle, showInventory, 1, 25);
+        return beerServiceImpl.listBeers(beerName, beerStyle, showInventory, pageNumber, pageSize);
     }
 
     @GetMapping(API_V1_BEER_ID_PATH)
