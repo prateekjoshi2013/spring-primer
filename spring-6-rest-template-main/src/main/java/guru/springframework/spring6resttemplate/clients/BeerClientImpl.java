@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -12,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import guru.springframework.spring6resttemplate.model.BeerDTO;
+import guru.springframework.spring6resttemplate.model.BeerDTOPageImpl;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -77,6 +80,8 @@ public class BeerClientImpl implements BeerClient {
         jsonResponse.getBody().findPath("content").elements().forEachRemaining(node -> {
             System.out.println(node.get("beerName").asText());
         });
+        ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(BASE_URL + GET_BEER_PATH,
+                BeerDTOPageImpl.class);
         return null;
     }
 
