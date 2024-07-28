@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BeerClientImpl implements BeerClient {
 
-    private static final String BASE_URL = "http://localhost:8080";
     private static final String GET_BEER_PATH = "/api/v1/beer";
     private final RestTemplateBuilder restTemplateBuilder;
 
@@ -74,19 +73,19 @@ public class BeerClientImpl implements BeerClient {
     @Override
     public Page<BeerDTO> listBeers() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        ResponseEntity<String> stringResponse = restTemplate.getForEntity(BASE_URL + GET_BEER_PATH,
+        ResponseEntity<String> stringResponse = restTemplate.getForEntity(GET_BEER_PATH,
                 String.class);
-        ResponseEntity<Map> mapResponse = restTemplate.getForEntity(BASE_URL + GET_BEER_PATH, Map.class);
+        ResponseEntity<Map> mapResponse = restTemplate.getForEntity(GET_BEER_PATH, Map.class);
 
-        ResponseEntity<JsonNode> jsonResponse = restTemplate.getForEntity(BASE_URL + GET_BEER_PATH, JsonNode.class);
+        ResponseEntity<JsonNode> jsonResponse = restTemplate.getForEntity(GET_BEER_PATH, JsonNode.class);
         jsonResponse.getBody().findPath("content").elements().forEachRemaining(node -> {
             System.out.println(node.get("beerName").asText());
         });
-        ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(BASE_URL + GET_BEER_PATH,
+        ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(GET_BEER_PATH,
                 BeerDTOPageImpl.class);
 
         ResponseEntity<CustomPageImpl<BeerDTO>> responseEntity = restTemplate.exchange(
-                BASE_URL + GET_BEER_PATH,
+                GET_BEER_PATH,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<CustomPageImpl<BeerDTO>>() {
