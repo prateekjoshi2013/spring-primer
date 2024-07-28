@@ -1,0 +1,8 @@
+### Beer
+
+GET http://localhost:8080/beers
+
+### Beer
+
+GET http://localhost:8080/beers?beerStyle=ALE
+
