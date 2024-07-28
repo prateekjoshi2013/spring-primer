@@ -1,8 +1,8 @@
 ### Beer
 
-GET http://localhost:8080/beers
+GET http://localhost:8080/api/v1/beers
 
 ### Beer
 
-GET http://localhost:8080/beers?beerStyle=ALE
+GET http://localhost:8080/api/v1/beers?beerStyle=ALE
 
