@@ -7,6 +7,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import guru.springframework.spring6resttemplate.model.BeerDTO;
 import guru.springframework.spring6resttemplate.model.BeerDTOPageImpl;
+import guru.springframework.spring6resttemplate.model.CustomPageImpl;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -82,6 +84,14 @@ public class BeerClientImpl implements BeerClient {
         });
         ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(BASE_URL + GET_BEER_PATH,
                 BeerDTOPageImpl.class);
+
+        ResponseEntity<CustomPageImpl<BeerDTO>> responseEntity = restTemplate.exchange(
+                BASE_URL + GET_BEER_PATH,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<CustomPageImpl<BeerDTO>>() {
+                });
+
         return null;
     }
 
