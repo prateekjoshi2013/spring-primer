@@ -11,11 +11,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import guru.springframework.spring6resttemplate.model.BeerDTO;
 import guru.springframework.spring6resttemplate.model.BeerDTOPageImpl;
+import guru.springframework.spring6resttemplate.model.BeerStyle;
 import guru.springframework.spring6resttemplate.model.CustomPageImpl;
 import lombok.RequiredArgsConstructor;
 
@@ -73,25 +75,50 @@ public class BeerClientImpl implements BeerClient {
     @Override
     public Page<BeerDTO> listBeers() {
         RestTemplate restTemplate = restTemplateBuilder.build();
-        ResponseEntity<String> stringResponse = restTemplate.getForEntity(GET_BEER_PATH,
+        // create a uri by appending to basepath we set in rest template builder
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+        ResponseEntity<String> stringResponse = restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
                 String.class);
-        ResponseEntity<Map> mapResponse = restTemplate.getForEntity(GET_BEER_PATH, Map.class);
+        ResponseEntity<Map> mapResponse = restTemplate.getForEntity(uriComponentsBuilder.toUriString(), Map.class);
 
-        ResponseEntity<JsonNode> jsonResponse = restTemplate.getForEntity(GET_BEER_PATH, JsonNode.class);
+        ResponseEntity<JsonNode> jsonResponse = restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
+                JsonNode.class);
         jsonResponse.getBody().findPath("content").elements().forEachRemaining(node -> {
             System.out.println(node.get("beerName").asText());
         });
-        ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(GET_BEER_PATH,
+        ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
                 BeerDTOPageImpl.class);
 
         ResponseEntity<CustomPageImpl<BeerDTO>> responseEntity = restTemplate.exchange(
-                GET_BEER_PATH,
+                uriComponentsBuilder.toUriString(),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<CustomPageImpl<BeerDTO>>() {
                 });
 
         return null;
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory, Integer pageNumber,
+            Integer pageSize) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        // create a uri by appending to basepath we set in rest template builder
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
+        // set query param
+        uriComponentsBuilder.queryParam("beerName", beerName);
+        uriComponentsBuilder.queryParam("beerStyle", beerStyle);
+        uriComponentsBuilder.queryParam("showInventory", showInventory);
+        uriComponentsBuilder.queryParam("pageNumber", pageNumber);
+        uriComponentsBuilder.queryParam("pageSize", pageSize);
+        ResponseEntity<CustomPageImpl<BeerDTO>> responseEntity = restTemplate.exchange(
+                uriComponentsBuilder.toUriString(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<CustomPageImpl<BeerDTO>>() {
+                });
+
+        return responseEntity.getBody();
     }
 
 }
