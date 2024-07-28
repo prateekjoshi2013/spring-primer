@@ -1,6 +1,7 @@
 package guru.springframework.spring6resttemplate.clients;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class BeerClientImpl implements BeerClient {
 
     private static final String GET_BEER_PATH = "/api/v1/beer";
+    private static final String GET_BEER_BY_ID_PATH = "/api/v1/beer/{beerId}";
     private final RestTemplateBuilder restTemplateBuilder;
 
     /**
@@ -119,6 +121,12 @@ public class BeerClientImpl implements BeerClient {
                 });
 
         return responseEntity.getBody();
+    }
+
+    @Override
+    public BeerDTO getBeerById(UUID beerId) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        return restTemplate.getForObject(GET_BEER_BY_ID_PATH, BeerDTO.class, beerId);
     }
 
 }
