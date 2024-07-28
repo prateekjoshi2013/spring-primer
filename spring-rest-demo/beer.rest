@@ -2,6 +2,11 @@
 
 GET http://localhost:8080/api/v1/beer
 
+### Beer
+
+GET http://localhost:8080/api/v1/beer?beerStyle=ALE
+
+
 ### 
 GET http://localhost:8080/api/v1/beer/0e5be93b-dd1a-4c2d-8817-b3ee35143eeb
 
