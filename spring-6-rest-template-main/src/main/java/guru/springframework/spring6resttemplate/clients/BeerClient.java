@@ -14,4 +14,6 @@ public interface BeerClient {
             Integer pageSize);
 
     BeerDTO getBeerById(UUID id);
+
+    BeerDTO createBeer(BeerDTO newDto);
 }

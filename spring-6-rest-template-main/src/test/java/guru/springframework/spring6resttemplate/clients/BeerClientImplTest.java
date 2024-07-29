@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,19 @@ import guru.springframework.spring6resttemplate.model.BeerStyle;
 public class BeerClientImplTest {
     @Autowired
     BeerClient beerClientImpl;
+
+    @Test
+    void testCreateBeer() {
+        BeerDTO newDto = BeerDTO.builder()
+                .price(BigDecimal.TEN)
+                .beerName("Prateek Beer")
+                .beerStyle(BeerStyle.IPA)
+                .quantityOnHand(500)
+                .upc("123456")
+                .build();
+        BeerDTO savedDto = beerClientImpl.createBeer(newDto);
+        assertNotNull(savedDto);
+    }
 
     @Test
     void testListBeers() {

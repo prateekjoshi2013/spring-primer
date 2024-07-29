@@ -1,5 +1,6 @@
 package guru.springframework.spring6resttemplate.clients;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
@@ -127,6 +128,17 @@ public class BeerClientImpl implements BeerClient {
     public BeerDTO getBeerById(UUID beerId) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         return restTemplate.getForObject(GET_BEER_BY_ID_PATH, BeerDTO.class, beerId);
+    }
+
+    @Override
+    public BeerDTO createBeer(BeerDTO newDto) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        ResponseEntity<BeerDTO> response = restTemplate.postForEntity(GET_BEER_PATH,
+                newDto, BeerDTO.class);
+        return response.getBody();
+        // if you only have Location header attribute populated use the below logic
+        // URI uri = restTemplate.postForLocation(GET_BEER_PATH, newDto);
+        // return restTemplate.getForObject(uri, BeerDTO.class);
     }
 
 }
