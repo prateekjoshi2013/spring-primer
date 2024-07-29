@@ -7,9 +7,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestToUriTemplate;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withAccepted;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -70,6 +72,22 @@ public class BeerClientMockTest {
 
     @Test
     @SneakyThrows
+    void testCreateBeer() {
+        BeerDTO dto = getBeerDto();
+        String payload = objectMapper.writeValueAsString(dto);
+        URI uri = UriComponentsBuilder.fromPath(BeerClientImpl.GET_BEER_BY_ID_PATH).build(dto.getId());
+
+        server.expect(method(HttpMethod.POST))
+                .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
+                .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
+        // .andRespond(withAccepted().location(uri)); to check for location field
+
+        BeerDTO dtos = beerClient.createBeer(dto);
+        assertThat(dtos.getId()).isEqualTo(dto.getId());
+    }
+
+    @Test
+    @SneakyThrows
     void testListBeers() {
         String payload = objectMapper.writeValueAsString(getPage());
         server.expect(method(HttpMethod.GET))
@@ -84,7 +102,8 @@ public class BeerClientMockTest {
     @Test
     @SneakyThrows
     void testGetBeerById() {
-        BeerDTO beerDto = getBeerDto();;
+        BeerDTO beerDto = getBeerDto();
+        ;
         UUID id = beerDto.getId();
         String payload = objectMapper.writeValueAsString(beerDto);
 
