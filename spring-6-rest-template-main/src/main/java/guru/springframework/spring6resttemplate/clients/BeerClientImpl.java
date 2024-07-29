@@ -80,19 +80,25 @@ public class BeerClientImpl implements BeerClient {
                 RestTemplate restTemplate = restTemplateBuilder.build();
                 // create a uri by appending to basepath we set in rest template builder
                 UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
-                ResponseEntity<String> stringResponse = restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
-                                String.class);
-                ResponseEntity<Map> mapResponse = restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
-                                Map.class);
 
-                ResponseEntity<JsonNode> jsonResponse = restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
-                                JsonNode.class);
-                jsonResponse.getBody().findPath("content").elements().forEachRemaining(node -> {
-                        System.out.println(node.get("beerName").asText());
-                });
-                ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(
-                                uriComponentsBuilder.toUriString(),
-                                BeerDTOPageImpl.class);
+                // Alternate ways of fetching object
+                // ResponseEntity<String> stringResponse =
+                // restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
+                // String.class);
+                // ResponseEntity<Map> mapResponse =
+                // restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
+                // Map.class);
+
+                // ResponseEntity<JsonNode> jsonResponse =
+                // restTemplate.getForEntity(uriComponentsBuilder.toUriString(),
+                // JsonNode.class);
+                // jsonResponse.getBody().findPath("content").elements().forEachRemaining(node
+                // -> {
+                // System.out.println(node.get("beerName").asText());
+                // });
+                // ResponseEntity<BeerDTOPageImpl> beerDtoResponse = restTemplate.getForEntity(
+                // uriComponentsBuilder.toUriString(),
+                // BeerDTOPageImpl.class);
 
                 ResponseEntity<CustomPageImpl<BeerDTO>> responseEntity = restTemplate.exchange(
                                 uriComponentsBuilder.toUriString(),
@@ -101,7 +107,7 @@ public class BeerClientImpl implements BeerClient {
                                 new ParameterizedTypeReference<CustomPageImpl<BeerDTO>>() {
                                 });
 
-                return null;
+                return responseEntity.getBody();
         }
 
         @Override
