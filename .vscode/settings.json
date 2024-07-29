@@ -1,4 +1,5 @@
 {
+    "java.server.launchMode": "Standard",
     "workbench.iconTheme": "material-icon-theme",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
