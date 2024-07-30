@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../..:/workspaces:cached
-      - ${HOME}/.ssh:/root/.ssh:cached     # needed for ssh auth for github, or other servers
     networks:
       - dev-network
     depends_on:

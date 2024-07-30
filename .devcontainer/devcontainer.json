@@ -5,7 +5,7 @@
 	"dockerComposeFile": "./docker-compose.yml",
 	"service": "devcontainer",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	"postStartCommand": "git config --global --add safe.directory /workspaces/${localWorkspaceFolderBasename}",
+	"postStartCommand": "git config --global --add safe.directory /workspaces/${localWorkspaceFolderBasename} && ssh -T git@github.com",
 	"customizations": {
 		"extensions.verifySignature": false,
 		"vscode": {

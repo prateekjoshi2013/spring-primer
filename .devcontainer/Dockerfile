@@ -2,7 +2,7 @@
 FROM alpine:3.20
 
 # Install necessary packages and tools
-RUN apk add --no-cache bash curl git unzip nano make musl-utils musl-locales tzdata
+RUN apk add --no-cache bash curl git unzip nano make musl-utils musl-locales tzdata openssh
 
 # Set the default shell to bash
 ENV SHELL /bin/bash
