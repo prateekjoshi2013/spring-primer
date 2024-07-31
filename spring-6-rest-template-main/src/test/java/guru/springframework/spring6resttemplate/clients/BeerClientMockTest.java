@@ -1,10 +1,12 @@
 package guru.springframework.spring6resttemplate.clients;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.DynamicTest.stream;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestToUriTemplate;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withAccepted;
@@ -82,6 +84,7 @@ public class BeerClientMockTest {
                 .andRespond(withNoContent());
 
         beerClient.deleteBeer(id);
+        server.verify();
     }
 
     @Test
@@ -134,6 +137,26 @@ public class BeerClientMockTest {
 
     @Test
     @SneakyThrows
+    void testListBeersWithQueryParams() {
+        String payload = objectMapper.writeValueAsString(getPage());
+        URI uri=UriComponentsBuilder.fromHttpUrl(URL + BeerClientImpl.GET_BEER_PATH)
+        .queryParam("beerName", "ALE")
+        .queryParam("beerStyle", "ALE")
+        .queryParam("showInventory", true)
+        .queryParam("pageNumber", 1)
+        .queryParam("pageSize", 1)
+        .build().toUri();
+        server.expect(method(HttpMethod.GET))
+                .andExpect(requestTo(uri))
+                .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
+
+        Page<BeerDTO> dtos = beerClient.listBeers("ALE", BeerStyle.ALE, true, 1,
+        1);
+        assertThat(dtos.getContent().size()).isGreaterThan(0);
+    }
+
+    @Test
+    @SneakyThrows
     void testListBeers() {
         String payload = objectMapper.writeValueAsString(getPage());
         server.expect(method(HttpMethod.GET))
@@ -143,6 +166,7 @@ public class BeerClientMockTest {
         Page<BeerDTO> dtos = beerClient.listBeers();
         assertThat(dtos.getContent().size()).isGreaterThan(0);
     }
+
 
     @Test
     @SneakyThrows
