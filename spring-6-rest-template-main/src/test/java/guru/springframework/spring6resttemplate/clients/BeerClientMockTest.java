@@ -72,10 +72,46 @@ public class BeerClientMockTest {
 
     @Test
     @SneakyThrows
+    void testUpdateBeer() {
+        BeerDTO beerDto = getBeerDto();
+        UUID id = beerDto.getId();
+        beerDto.setVersion(1);
+        String payload = objectMapper.writeValueAsString(beerDto);
+        
+        BeerDTO beerDtoUpdated=BeerDTO.builder()
+        .id(id)
+        .beerName("Updated Beer Name")
+        .beerStyle(beerDto.getBeerStyle())
+        .version(2)
+        .price(beerDto.getPrice())
+        .quantityOnHand(beerDto.getQuantityOnHand())
+        .upc(beerDto.getUpc()).build();  
+
+        String updatedPayload = objectMapper.writeValueAsString(beerDtoUpdated);
+
+        server
+        .expect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
+        .andExpect(method(HttpMethod.PUT))
+        .andRespond(withSuccess(updatedPayload, MediaType.APPLICATION_JSON));
+
+
+        server
+        .expect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(updatedPayload, MediaType.APPLICATION_JSON));
+
+        
+
+        BeerDTO updatedDtos = beerClient.updateBeer(beerDto);
+        assertThat(beerDto.getVersion()+1).isEqualTo(updatedDtos.getVersion());
+        server.verify();
+    }
+
+    @Test
+    @SneakyThrows
     void testCreateBeer() {
         BeerDTO dto = getBeerDto();
         String payload = objectMapper.writeValueAsString(dto);
-        URI uri = UriComponentsBuilder.fromPath(BeerClientImpl.GET_BEER_BY_ID_PATH).build(dto.getId());
 
         server.expect(method(HttpMethod.POST))
                 .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
@@ -93,7 +129,6 @@ public class BeerClientMockTest {
         server.expect(method(HttpMethod.GET))
                 .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
                 .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
-        ;
 
         Page<BeerDTO> dtos = beerClient.listBeers();
         assertThat(dtos.getContent().size()).isGreaterThan(0);
@@ -103,7 +138,6 @@ public class BeerClientMockTest {
     @SneakyThrows
     void testGetBeerById() {
         BeerDTO beerDto = getBeerDto();
-        ;
         UUID id = beerDto.getId();
         String payload = objectMapper.writeValueAsString(beerDto);
 
