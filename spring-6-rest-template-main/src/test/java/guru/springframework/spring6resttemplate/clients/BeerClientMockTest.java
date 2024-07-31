@@ -8,6 +8,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestToUriTemplate;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withAccepted;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withNoContent;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import java.math.BigDecimal;
@@ -72,11 +73,23 @@ public class BeerClientMockTest {
 
     @Test
     @SneakyThrows
+    void testDeleteBeerById() {
+        BeerDTO beerDto = getBeerDto();
+        UUID id = beerDto.getId();
+
+        server.expect(method(HttpMethod.DELETE))
+                .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
+                .andRespond(withNoContent());
+
+        beerClient.deleteBeer(id);
+    }
+
+    @Test
+    @SneakyThrows
     void testUpdateBeer() {
         BeerDTO beerDto = getBeerDto();
         UUID id = beerDto.getId();
         beerDto.setVersion(1);
-        String payload = objectMapper.writeValueAsString(beerDto);
         
         BeerDTO beerDtoUpdated=BeerDTO.builder()
         .id(id)
@@ -94,13 +107,10 @@ public class BeerClientMockTest {
         .andExpect(method(HttpMethod.PUT))
         .andRespond(withSuccess(updatedPayload, MediaType.APPLICATION_JSON));
 
-
         server
         .expect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(updatedPayload, MediaType.APPLICATION_JSON));
-
-        
 
         BeerDTO updatedDtos = beerClient.updateBeer(beerDto);
         assertThat(beerDto.getVersion()+1).isEqualTo(updatedDtos.getVersion());
