@@ -20,6 +20,8 @@
         "org.hamcrest.Matchers.*",
         "org.assertj.core.api.Assertions.*",
         "org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*",
+        "org.springframework.test.web.client.match.MockRestRequestMatchers.*",
+        "org.springframework.test.web.client.response.MockRestResponseCreators.*",
     ],
     "java.debug.settings.onBuildFailureProceed": true,
     "java.test.config": {
