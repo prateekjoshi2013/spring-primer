@@ -30,12 +30,14 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prateek.web.springrestdemo.config.SpringSecConfig;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.domain.exceptions.ValidationException;
 import com.prateek.web.springrestdemo.model.BeerDTO;
@@ -46,6 +48,7 @@ import lombok.SneakyThrows;
 
 @EnabledIf(value = "#{{'default'}.contains(environment.getActiveProfiles()[0])}", loadContext = false)
 @WebMvcTest(BeerController.class)
+@Import(SpringSecConfig.class)
 public class BeerControllerTest {
 
         @Autowired
@@ -158,7 +161,7 @@ public class BeerControllerTest {
         @SneakyThrows
         @Test
         void testListBeers() {
-                given(beerService.listBeers(null, null, null, 1, 25)).willReturn(new PageImpl<>(mockedBeers));
+                given(beerService.listBeers(null, null, null, null, null)).willReturn(new PageImpl<>(mockedBeers));
 
                 mockMvc.perform(get(BeerController.API_V1_BEER)
                                 .with(httpBasic("user", "password"))
