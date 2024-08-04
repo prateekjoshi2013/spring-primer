@@ -27,8 +27,8 @@
             "request": "launch",
             "type": "java",
             "mainClass": "com.example.Application", // Replace with your main application class
-            "args": ["--spring.profiles.active=localmysql"], // Set your profile here
-            "vmArgs": ["-Dspring.profiles.active=localmysql"], // Set your profile here
+            "args": ["--spring.profiles.active=default"], // Set your profile here
+            "vmArgs": ["-Dspring.profiles.active=default"], // Set your profile here
             "console": "integratedTerminal"
     }
      
