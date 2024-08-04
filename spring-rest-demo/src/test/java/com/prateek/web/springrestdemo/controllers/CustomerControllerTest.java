@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -81,6 +82,7 @@ public class CustomerControllerTest {
         given(customerService.listCustomers()).willReturn(mockedCustomers);
 
         mockMvc.perform(get(CustomerController.API_V1_CUSTOMER)
+                .with(httpBasic("user", "password"))
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())
@@ -99,6 +101,7 @@ public class CustomerControllerTest {
 
         // Act
         mockMvc.perform(get(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())
+                .with(httpBasic("user", "password"))
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())
@@ -117,6 +120,7 @@ public class CustomerControllerTest {
 
         mockMvc.perform(
                 post(CustomerController.API_V1_CUSTOMER)
+                        .with(httpBasic("user", "password"))
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockedCustomers.get(1)))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -138,6 +142,7 @@ public class CustomerControllerTest {
         // act
         mockMvc.perform(
                 put(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())
+                        .with(httpBasic("user", "password"))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customer)))
@@ -155,6 +160,7 @@ public class CustomerControllerTest {
 
         mockMvc.perform(
                 delete(CustomerController.API_V1_CUSTOMER_PATH_ID, customer.getId())
+                        .with(httpBasic("user", "password"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -171,7 +177,8 @@ public class CustomerControllerTest {
                 .thenThrow(new NoCustomerException(customerId.toString()));
 
         // Act
-        mockMvc.perform(get(CustomerController.API_V1_CUSTOMER_PATH_ID, customerId.toString()))
+        mockMvc.perform(get(CustomerController.API_V1_CUSTOMER_PATH_ID, customerId.toString())
+                .with(httpBasic("user", "password")))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 // jsonpath documentation : https://github.com/json-path/JsonPath

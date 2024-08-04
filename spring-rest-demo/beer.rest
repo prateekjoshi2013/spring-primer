@@ -1,6 +1,6 @@
 ### Beer
 
-GET http://localhost:8080/api/v1/beer?pageSize=1&pageNumber=1
+GET http://localhost:8080/api/v1/beer?pageSize=1&pageNumber=25
 Authorization: Basic user:password
 
 ### Beer

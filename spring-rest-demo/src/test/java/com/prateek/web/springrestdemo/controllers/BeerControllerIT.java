@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -70,6 +71,7 @@ public class BeerControllerIT {
     @SneakyThrows
     void testListBeersByName() {
         mockMvc.perform(get(BeerController.API_V1_BEER)
+                .with(httpBasic("user","password"))
                 .queryParam("beerName", "IPA")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements", is(336)));
     }
