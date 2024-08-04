@@ -1,22 +1,22 @@
 ### Beer
 
 GET http://localhost:8080/api/v1/beer?pageSize=1&pageNumber=1
-Authorization: Basic user:283b2bf2-5b1e-4236-abe2-b5bb9f27b659
+Authorization: Basic user:password
 
 ### Beer
 
 GET http://localhost:8080/api/v1/beer?beerStyle=ALE
-Authorization: Basic user:283b2bf2-5b1e-4236-abe2-b5bb9f27b659
+Authorization: Basic user:password
 
 
 
 ### 
 GET http://localhost:8080/api/v1/beer/fbb8e132-210b-424f-b22f-004d18c13841
-Authorization: Basic user:283b2bf2-5b1e-4236-abe2-b5bb9f27b659
+Authorization: Basic user:password
 
 ###
 POST http://localhost:8080/api/v1/beer
-Authorization: Basic user:283b2bf2-5b1e-4236-abe2-b5bb9f27b659
+Authorization: Basic user:password
 Content-Type: application/json
 
 {
