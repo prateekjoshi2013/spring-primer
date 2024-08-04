@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.DynamicTest.stream;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -80,7 +81,9 @@ public class BeerClientMockTest {
         UUID id = beerDto.getId();
 
         server.expect(method(HttpMethod.DELETE))
+        .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
                 .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
+                .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
                 .andRespond(withNoContent());
 
         beerClient.deleteBeer(id);
@@ -107,12 +110,14 @@ public class BeerClientMockTest {
 
         server
         .expect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
+        .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
         .andExpect(method(HttpMethod.PUT))
         .andRespond(withSuccess(updatedPayload, MediaType.APPLICATION_JSON));
 
         server
         .expect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
         .andExpect(method(HttpMethod.GET))
+        .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
         .andRespond(withSuccess(updatedPayload, MediaType.APPLICATION_JSON));
 
         BeerDTO updatedDtos = beerClient.updateBeer(beerDto);
@@ -128,6 +133,7 @@ public class BeerClientMockTest {
 
         server.expect(method(HttpMethod.POST))
                 .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
+                .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
                 .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
         // .andRespond(withAccepted().location(uri)); to check for location field
 
@@ -147,6 +153,7 @@ public class BeerClientMockTest {
         .queryParam("pageSize", 1)
         .build().toUri();
         server.expect(method(HttpMethod.GET))
+        .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
                 .andExpect(requestTo(uri))
                 .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
 
@@ -160,6 +167,7 @@ public class BeerClientMockTest {
     void testListBeers() {
         String payload = objectMapper.writeValueAsString(getPage());
         server.expect(method(HttpMethod.GET))
+        .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
                 .andExpect(requestTo(URL + BeerClientImpl.GET_BEER_PATH))
                 .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
 
@@ -176,6 +184,7 @@ public class BeerClientMockTest {
         String payload = objectMapper.writeValueAsString(beerDto);
 
         server.expect(method(HttpMethod.GET))
+        .andExpect(header("Authorization","Basic dXNlcjpwYXNzd29yZA=="))
                 .andExpect(requestToUriTemplate(URL + BeerClientImpl.GET_BEER_BY_ID_PATH, id))
                 .andRespond(withSuccess(payload, MediaType.APPLICATION_JSON));
         ;
