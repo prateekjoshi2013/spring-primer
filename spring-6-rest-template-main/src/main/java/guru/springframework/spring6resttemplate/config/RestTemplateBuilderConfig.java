@@ -13,10 +13,19 @@ public class RestTemplateBuilderConfig {
     @Value("${rest.template.beer.base.url}")
     private String beerBaseUrl;
 
+    @Value("${rest.template.username}")
+    private String username;
+
+    @Value("${rest.template.password}")
+    private String password;
+
     @Bean
     RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer) {
-        // sets up resttemplate builder with spring defaults
-        RestTemplateBuilder builder = configurer.configure(new RestTemplateBuilder());
+        RestTemplateBuilder builder = configurer
+                                    // sets up resttemplate builder with spring defaults
+                                    .configure(new RestTemplateBuilder())
+                                    // enable basic authentication
+                                    .basicAuthentication(username, password);
         // Now we will override some base uri settings
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(beerBaseUrl);
         // set the uri builder factory in the builder and return the builder
