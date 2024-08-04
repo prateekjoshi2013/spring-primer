@@ -11,7 +11,7 @@ compile:
 
 # Rule to run tests
 test:
-	mvn test
+	mvn test -Dspring.profiles.active=default
 
 # Rule to package the project
 package:
