@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +33,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prateek.web.springrestdemo.config.SpringSecConfig;
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.mappers.BeerMapper;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.repositories.BeerRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 
@@ -64,7 +66,17 @@ public class BeerControllerIT {
 
     @BeforeEach
     void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+        .apply(springSecurity()).build();
+    }
+
+
+    @Test
+    @SneakyThrows
+    void testNoAuth() {
+        mockMvc.perform(get(BeerController.API_V1_BEER)
+                .queryParam("beerName", "IPA"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -80,6 +92,7 @@ public class BeerControllerIT {
     @SneakyThrows
     void testListBeersByNameAndByBeer() {
         mockMvc.perform(get(BeerController.API_V1_BEER)
+        .with(httpBasic("user","password"))
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", "IPA"))
                 .andExpect(status().isOk())
@@ -99,6 +112,7 @@ public class BeerControllerIT {
                 .build();
         mockMvc.perform(
                 post(BeerController.API_V1_BEER)
+                .with(httpBasic("user","password"))
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer))
                         .contentType(MediaType.APPLICATION_JSON))
