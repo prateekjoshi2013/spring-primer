@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,12 +67,20 @@ public class BeerControllerIT {
 
     private MockMvc mockMvc;
 
+    SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor = jwt().jwt(jwt -> {
+        jwt.claims(claims -> {
+            claims.put("scope", "message-read");
+            claims.put("scope", "message-write");
+        })
+                .subject("messaging-client")
+                .notBefore(Instant.now().minusSeconds(5l));
+    });
+
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-        .apply(springSecurity()).build();
+                .apply(springSecurity()).build();
     }
-
 
     @Test
     @SneakyThrows
@@ -83,7 +94,7 @@ public class BeerControllerIT {
     @SneakyThrows
     void testListBeersByName() {
         mockMvc.perform(get(BeerController.API_V1_BEER)
-                .with(httpBasic("user","password"))
+                .with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements", is(336)));
     }
@@ -92,7 +103,7 @@ public class BeerControllerIT {
     @SneakyThrows
     void testListBeersByNameAndByBeer() {
         mockMvc.perform(get(BeerController.API_V1_BEER)
-        .with(httpBasic("user","password"))
+                .with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", "IPA"))
                 .andExpect(status().isOk())
@@ -112,7 +123,7 @@ public class BeerControllerIT {
                 .build();
         mockMvc.perform(
                 post(BeerController.API_V1_BEER)
-                .with(httpBasic("user","password"))
+                        .with(jwtRequestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer))
                         .contentType(MediaType.APPLICATION_JSON))
