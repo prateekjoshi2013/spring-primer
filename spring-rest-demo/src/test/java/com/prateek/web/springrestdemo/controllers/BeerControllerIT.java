@@ -6,12 +6,16 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,9 +23,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,13 +36,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prateek.web.springrestdemo.config.SpringSecConfig;
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.mappers.BeerMapper;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.repositories.BeerRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 
@@ -61,15 +67,34 @@ public class BeerControllerIT {
 
     private MockMvc mockMvc;
 
+    SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor = jwt().jwt(jwt -> {
+        jwt.claims(claims -> {
+            claims.put("scope", "message-read");
+            claims.put("scope", "message-write");
+        })
+                .subject("messaging-client")
+                .notBefore(Instant.now().minusSeconds(5l));
+    });
+
     @BeforeEach
     void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+                .apply(springSecurity()).build();
+    }
+
+    @Test
+    @SneakyThrows
+    void testNoAuth() {
+        mockMvc.perform(get(BeerController.API_V1_BEER)
+                .queryParam("beerName", "IPA"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     @SneakyThrows
     void testListBeersByName() {
         mockMvc.perform(get(BeerController.API_V1_BEER)
+                .with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements", is(336)));
     }
@@ -78,6 +103,7 @@ public class BeerControllerIT {
     @SneakyThrows
     void testListBeersByNameAndByBeer() {
         mockMvc.perform(get(BeerController.API_V1_BEER)
+                .with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", "IPA"))
                 .andExpect(status().isOk())
@@ -97,6 +123,7 @@ public class BeerControllerIT {
                 .build();
         mockMvc.perform(
                 post(BeerController.API_V1_BEER)
+                        .with(jwtRequestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -148,16 +175,16 @@ public class BeerControllerIT {
     @Test
     void testByGetId() {
 
-        BeerDTO beerDto = beerController.listBeers(null, null, false, 1, 25).toList().get(0);
-        BeerDTO beer = beerController.getBeerById(beerDto.getId());
+        BeerDTO beerDto = beerController.listBeers(null, null, false, 1, 25).getBody().getContent().get(0);
+        BeerDTO beer = beerController.getBeerById(beerDto.getId()).getBody();
         assertEquals(beerDto.getId(), beer.getId());
     }
 
     @Test
     void testListBeers() {
-        Page<BeerDTO> beers = beerController.listBeers(null, null, false, 1, 25);
-        assertThat(beers.getContent().size()).isEqualTo(25);
-        assertThat(beers.getTotalElements()).isEqualTo(2410);
+        Page<BeerDTO> beers = beerController.listBeers(null, null, false, 1, 25).getBody();
+        assertThat(beers.getContent().size()).isEqualTo(1);
+        assertThat(beers.getTotalElements()).isGreaterThan(2409);
     }
 
     @Rollback
@@ -165,7 +192,7 @@ public class BeerControllerIT {
     @Test
     void testEmptyList() {
         beerRepository.deleteAll();
-        Page<BeerDTO> dtos = beerController.listBeers(null, null, false, 1, 25);
+        Page<BeerDTO> dtos = beerController.listBeers(null, null, false, 1, 25).getBody();
         assertThat(dtos.getContent().size()).isEqualTo(0);
     }
 

@@ -1,4 +1,8 @@
 {
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 2000,
+    // Other settings here
+    "editor.formatOnSave": true,
     "java.server.launchMode": "Standard",
     "workbench.iconTheme": "material-icon-theme",
     "java.compile.nullAnalysis.mode": "automatic",
@@ -19,8 +23,22 @@
         "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*",
         "org.hamcrest.Matchers.*",
         "org.assertj.core.api.Assertions.*",
+        "org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*",
         "org.springframework.test.web.client.match.MockRestRequestMatchers.*",
         "org.springframework.test.web.client.response.MockRestResponseCreators.*",
     ],
     "java.debug.settings.onBuildFailureProceed": true,
+    "java.test.config": {
+        "name": "Spring Boot Test",
+        "request": "launch",
+        "type": "java",
+        "mainClass": "com.example.Application", // Replace with your main application class
+        "args": [
+            "--spring.profiles.active=localmysql"
+        ], // Set your profile here
+        "vmArgs": [
+            "-Dspring.profiles.active=localmysql"
+        ], // Set your profile here
+        "console": "integratedTerminal"
+    }
 }

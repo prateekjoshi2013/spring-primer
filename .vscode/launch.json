@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Application",
+            "request": "launch",
+            "mainClass": "com.prateek.auth.server.Application",
+            "projectName": "auth.server"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-SpringRestDemoApplication<spring-rest-demo>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,17 +36,17 @@ public class BeerController {
     private final BeerService beerServiceImpl;
 
     @GetMapping(API_V1_BEER)
-    public Page<BeerDTO> listBeers(@RequestParam(name = "beerName", required = false) String beerName,
+    public ResponseEntity<Page<BeerDTO>> listBeers(@RequestParam(name = "beerName", required = false) String beerName,
             @RequestParam(name = "beerStyle", required = false) BeerStyle beerStyle,
             @RequestParam(name = "showInventory", required = false) Boolean showInventory,
             @RequestParam(name = "pageSize", required = false) Integer pageSize,
             @RequestParam(name = "pageNumber", required = false) Integer pageNumber) {
-        return beerServiceImpl.listBeers(beerName, beerStyle, showInventory, pageNumber, pageSize);
+        return new ResponseEntity<Page<BeerDTO>>(beerServiceImpl.listBeers(beerName, beerStyle, showInventory, pageNumber, pageSize),HttpStatus.OK);
     }
 
     @GetMapping(API_V1_BEER_ID_PATH)
-    public BeerDTO getBeerById(@PathVariable("beerId") UUID beerId) {
-        return beerServiceImpl.getBeerById(beerId).get();
+    public ResponseEntity<BeerDTO> getBeerById(@PathVariable("beerId") UUID beerId) {
+        return new ResponseEntity<BeerDTO>(beerServiceImpl.getBeerById(beerId).get(),HttpStatus.OK);
     }
 
     @PostMapping(API_V1_BEER)

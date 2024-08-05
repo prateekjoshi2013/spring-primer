@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -29,12 +32,15 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prateek.web.springrestdemo.config.SpringSecConfig;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
 import com.prateek.web.springrestdemo.domain.exceptions.ValidationException;
 import com.prateek.web.springrestdemo.model.BeerDTO;
@@ -45,6 +51,7 @@ import lombok.SneakyThrows;
 
 @EnabledIf(value = "#{{'default'}.contains(environment.getActiveProfiles()[0])}", loadContext = false)
 @WebMvcTest(BeerController.class)
+@Import(SpringSecConfig.class)
 public class BeerControllerTest {
 
         @Autowired
@@ -55,6 +62,15 @@ public class BeerControllerTest {
 
         @MockBean
         BeerService beerService;
+
+        SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor = jwt().jwt(jwt -> {
+                jwt.claims(claims -> {
+                        claims.put("scope", "message-read");
+                        claims.put("scope", "message-write");
+                })
+                                .subject("messaging-client")
+                                .notBefore(Instant.now().minusSeconds(5l));
+        });
 
         List<BeerDTO> mockedBeers = Stream.of(
                         BeerDTO.builder()
@@ -105,6 +121,7 @@ public class BeerControllerTest {
 
                 mockMvc.perform(
                                 delete(BeerController.API_V1_BEER_ID_PATH, beer.getId())
+                                                .with(jwtRequestPostProcessor)
                                                 .accept(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isNoContent());
 
@@ -125,6 +142,7 @@ public class BeerControllerTest {
                 // act
                 mockMvc.perform(
                                 put(BeerController.API_V1_BEER_ID_PATH, beer.getId())
+                                                .with(jwtRequestPostProcessor)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(beer)))
@@ -143,6 +161,7 @@ public class BeerControllerTest {
 
                 mockMvc.perform(
                                 post(BeerController.API_V1_BEER)
+                                                .with(jwtRequestPostProcessor)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(mockedBeers.get(1)))
                                                 .contentType(MediaType.APPLICATION_JSON))
@@ -154,9 +173,10 @@ public class BeerControllerTest {
         @SneakyThrows
         @Test
         void testListBeers() {
-                given(beerService.listBeers(null, null, null, 1, 25)).willReturn(new PageImpl<>(mockedBeers));
+                given(beerService.listBeers(null, null, null, null, null)).willReturn(new PageImpl<>(mockedBeers));
 
                 mockMvc.perform(get(BeerController.API_V1_BEER)
+                                .with(jwtRequestPostProcessor)
                                 .accept(MediaType.APPLICATION_JSON))
                                 // Assert
                                 .andExpect(status().isOk())
@@ -176,6 +196,7 @@ public class BeerControllerTest {
 
                 // Act
                 mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, beer.getId())
+                                .with(jwtRequestPostProcessor)
                                 .accept(MediaType.APPLICATION_JSON))
                                 // Assert
                                 .andExpect(status().isOk())
@@ -194,7 +215,8 @@ public class BeerControllerTest {
                 // Set up behaviours and mocks
                 given(beerService.getBeerById(any(UUID.class))).willThrow(new NoBeerFoundException(beerId.toString()));
                 // Act
-                mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, beerId.toString()))
+                mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, beerId.toString())
+                                .with(jwtRequestPostProcessor))
                                 .andExpect(status().isNotFound())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                                 // jsonpath documentation : https://github.com/json-path/JsonPath
@@ -209,7 +231,8 @@ public class BeerControllerTest {
                                 .thenThrow(ValidationException.class);
 
                 // Act
-                mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, UUID.randomUUID()))
+                mockMvc.perform(get(BeerController.API_V1_BEER_ID_PATH, UUID.randomUUID())
+                                .with(jwtRequestPostProcessor))
                                 .andExpect(status().is4xxClientError())
                                 .andDo(MockMvcResultHandlers.print());
         }
@@ -219,6 +242,7 @@ public class BeerControllerTest {
                 BeerDTO beer = BeerDTO.builder().beerName("").build();
                 mockMvc.perform(
                                 post(BeerController.API_V1_BEER)
+                                                .with(jwtRequestPostProcessor)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(beer))
                                                 .contentType(MediaType.APPLICATION_JSON))
@@ -231,6 +255,7 @@ public class BeerControllerTest {
                 BeerDTO beer = BeerDTO.builder().beerName("").build();
                 mockMvc.perform(
                                 post(BeerController.API_V1_BEER)
+                                                .with(jwtRequestPostProcessor)
                                                 .accept(MediaType.APPLICATION_JSON)
                                                 .content(objectMapper.writeValueAsString(beer))
                                                 .contentType(MediaType.APPLICATION_JSON))
