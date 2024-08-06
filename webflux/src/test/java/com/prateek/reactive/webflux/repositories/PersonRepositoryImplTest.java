@@ -111,9 +111,12 @@ public class PersonRepositoryImplTest {
         Flux<Person> personFlux1 = personRepository.findAll();
         Mono<List<Person>> collectList = personRepository.findAll().collectList();
         /**
-         * flatMapMany is a method in the Reactor library used to transform a Mono into a Flux. 
-         * This is particularly useful when you have a Mono that emits a single value which is 
-         * a collection or a stream, and you want to flatten this collection or stream into 
+         * flatMapMany is a method in the Reactor library used to transform a Mono into
+         * a Flux.
+         * This is particularly useful when you have a Mono that emits a single value
+         * which is
+         * a collection or a stream, and you want to flatten this collection or stream
+         * into
          * individual elements that can be processed reactively.
          */
         Flux<Person> personFlux2 = collectList.flatMapMany(list -> {
@@ -148,6 +151,22 @@ public class PersonRepositoryImplTest {
         Flux<Person> flux1 = personRepository.findAll().takeLast(2);
         Flux<Person> flux2 = personRepository.findAll().take(2);
         Flux.concat(flux1, flux2).subscribe(System.out::println);
+    }
+
+    @Test
+    void behaviourReactiveStream() {
+        final int ind = 8;
+        // The final operation only gets executed on subscription to the mono
+        // .next() produces an empty mono and does not trigger error No such Element
+        // exception
+        Mono<Person> personMono = personRepository.findAll().filter(person -> person.getId() == ind).next()
+                .doOnError(err -> System.out.println(err.getMessage()));
+        personMono.subscribe(person -> System.out.println(person));
+        // .single() produces an error and hence do on error logic gets executed
+        personMono = personRepository.findAll().filter(person -> person.getId() == ind).single()
+                .doOnError(err -> System.out.println(err.getMessage()));
+        personMono.subscribe(person -> System.out.println(person));
+
     }
 
 }
