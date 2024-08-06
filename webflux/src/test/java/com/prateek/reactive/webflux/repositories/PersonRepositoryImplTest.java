@@ -15,6 +15,7 @@ import com.prateek.reactive.webflux.domain.Person;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 public class PersonRepositoryImplTest {
 
@@ -38,6 +39,26 @@ public class PersonRepositoryImplTest {
     void testGetByIdNotFound() {
         Mono<Person> persMono = personRepository.getById(8);
         assertFalse(persMono.hasElement().block());
+        persMono.subscribe(
+                person -> System.out.println(person),
+                err -> System.out.println(err.getMessage()),
+                () -> System.out.println("completed because mono is empty!"));
+    }
+
+    @Test
+    void testGetByIdFoundWithStepVerifier() {
+        Mono<Person> persMono = personRepository.getById(2);
+        StepVerifier.create(persMono).expectNextCount(1).verifyComplete();
+        persMono.subscribe(
+                person -> System.out.println(person),
+                err -> System.out.println(err.getMessage()),
+                () -> System.out.println("completed because mono is empty!"));
+    }
+
+    @Test
+    void testGetByIdNotFoundWithStepVerifier() {
+        Mono<Person> persMono = personRepository.getById(8);
+        StepVerifier.create(persMono).expectNextCount(0).verifyComplete();
         persMono.subscribe(
                 person -> System.out.println(person),
                 err -> System.out.println(err.getMessage()),
