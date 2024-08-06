@@ -1,6 +1,9 @@
 package com.prateek.reactive.webflux.repositories;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -79,6 +82,72 @@ public class PersonRepositoryImplTest {
 
     }
 
+    @Test
+    void testFluxBlockFirst() {
+        Flux<Person> personFlux = personRepository.findAll();
+        Person blockFirst = personFlux.blockFirst();
+        System.out.println(blockFirst);
+    }
 
+    @Test
+    void testFluxSubscriber() {
+        personRepository.findAll().subscribe(person -> System.out.println(person));
+    }
+
+    @Test
+    void testFluxMap() {
+        personRepository.findAll().map(Person::getFirstName).subscribe(name -> System.out.println(name));
+    }
+
+    @Test
+    void filterFlux() {
+        personRepository.findAll()
+                .filter(person -> person.getId() > 3)
+                .subscribe(person -> System.out.println(person));
+    }
+
+    @Test
+    void combineMultipleFluxes() {
+        Flux<Person> personFlux1 = personRepository.findAll();
+        Mono<List<Person>> collectList = personRepository.findAll().collectList();
+        /**
+         * flatMapMany is a method in the Reactor library used to transform a Mono into a Flux. 
+         * This is particularly useful when you have a Mono that emits a single value which is 
+         * a collection or a stream, and you want to flatten this collection or stream into 
+         * individual elements that can be processed reactively.
+         */
+        Flux<Person> personFlux2 = collectList.flatMapMany(list -> {
+            Collections.reverse(list);
+            return Flux.fromIterable(list);
+        });
+        Flux.zip(personFlux1, personFlux2.take(2), (person1, person2) -> {
+            System.out.println("Person1:" + person1);
+            System.out.println("Person2:" + person2);
+            if (person1.getFirstName().compareTo(person2.getFirstName()) > 0) {
+                return person1;
+            } else {
+                return person2;
+            }
+        }).subscribe(person -> System.out.println(person));
+    }
+
+    @Test
+    void processRateLimt() {
+        List<String> largeData = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            largeData.add("Data " + i);
+        }
+
+        Flux.fromIterable(largeData)
+                .limitRate(100);
+        // Handle backpressure by limiting the rate
+    }
+
+    @Test
+    void mergingFluxItems() {
+        Flux<Person> flux1 = personRepository.findAll().takeLast(2);
+        Flux<Person> flux2 = personRepository.findAll().take(2);
+        Flux.concat(flux1, flux2).subscribe(System.out::println);
+    }
 
 }
