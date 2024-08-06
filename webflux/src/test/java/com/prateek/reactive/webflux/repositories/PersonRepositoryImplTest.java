@@ -1,5 +1,9 @@
 package com.prateek.reactive.webflux.repositories;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,14 +24,30 @@ public class PersonRepositoryImplTest {
     void testMonoIdBlock() {
         Mono<Person> personMono = personRepository.getById(1);
         Person person = personMono.block(); // this is blocking operation
-        ;
         System.out.println(person);
+    }
+
+    @Test
+    void testGetByIdFound() {
+        Mono<Person> persMono = personRepository.getById(2);
+        assertTrue(persMono.hasElement().block());
+        persMono.subscribe(person -> System.out.println(person));
+    }
+
+    @Test
+    void testGetByIdNotFound() {
+        Mono<Person> persMono = personRepository.getById(8);
+        assertFalse(persMono.hasElement().block());
+        persMono.subscribe(
+                person -> System.out.println(person),
+                err -> System.out.println(err.getMessage()),
+                () -> System.out.println("completed because mono is empty!"));
     }
 
     @Test
     void testGetByIdSubscriber() {
         Mono<Person> persMono = personRepository.getById(2);
-        persMono.subscribe(person -> System.out.println(person));
+        persMono.subscribe(person -> assertEquals(person.getId(), 2));
         // subscriber needed to get the final result
     }
 
