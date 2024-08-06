@@ -9,11 +9,13 @@ services:
     networks:
       - dev-network
     depends_on:
-      db:
+      mysqldb:
+        condition: service_healthy
+      mymongodb:
         condition: service_healthy
     command: sleep infinity
 
-  db:
+  mysqldb:
     image: mysql
     restart: always
     environment:
@@ -23,12 +25,48 @@ services:
       MYSQL_PASSWORD: root
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin  ping  -h  localhost --silent"]
-      interval: 10s
-      retries: 5
+      interval: 20s
+      retries: 12
       start_period: 30s
-      timeout: 10s
+      timeout: 120s
     ports:
       - 3306:3306  # Expose port 5432
+    networks:
+      - dev-network
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      mymongodb:
+        condition: service_healthy
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN  : true          
+      ME_CONFIG_MONGODB_PORT          : 27017           
+      ME_CONFIG_MONGODB_SERVER        : mymongodb
+      ME_CONFIG_MONGODB_ADMINUSERNAME : root
+      ME_CONFIG_MONGODB_ADMINPASSWORD : admin
+      ME_CONFIG_OPTIONS_EDITORTHEME   : 'ambience'       
+    networks:
+      - dev-network
+
+  mymongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    restart: always
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mymongodb:27017/test --quiet
+      interval: 20s
+      timeout: 120s
+      start_period: 30s
+      retries: 12
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27017:27017"
     networks:
       - dev-network
 
