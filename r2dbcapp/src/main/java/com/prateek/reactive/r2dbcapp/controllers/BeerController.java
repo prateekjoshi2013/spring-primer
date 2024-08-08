@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.prateek.reactive.r2dbcapp.domain.Beer;
 import com.prateek.reactive.r2dbcapp.model.BeerDTO;
 import com.prateek.reactive.r2dbcapp.services.BeerService;
 
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @AllArgsConstructor
@@ -44,6 +46,14 @@ public class BeerController {
                                     .build().toUri())
                     .build();
         });
+    }
+
+    @PutMapping(BEER_PATH_ID)
+    public Mono<ResponseEntity<Void>> updateBeer(@PathVariable("beerId") Integer id, @RequestBody BeerDTO beerDTO) {
+        return beerService.updateBeer(id, beerDTO).map(
+                updatedBeerDTO -> {
+                    return ResponseEntity.ok().build();
+                });
     }
 
 }
