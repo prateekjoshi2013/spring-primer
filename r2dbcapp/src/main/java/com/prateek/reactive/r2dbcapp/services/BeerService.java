@@ -9,4 +9,6 @@ public interface BeerService {
     Flux<BeerDTO> listBeers();
 
     Mono<BeerDTO> getBeerById(Integer id);
+
+    Mono<BeerDTO> createBeer(BeerDTO beerDTO);
 }

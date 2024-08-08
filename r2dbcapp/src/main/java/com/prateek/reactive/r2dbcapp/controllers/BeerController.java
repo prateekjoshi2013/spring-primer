@@ -1,8 +1,12 @@
 package com.prateek.reactive.r2dbcapp.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.prateek.reactive.r2dbcapp.model.BeerDTO;
 import com.prateek.reactive.r2dbcapp.services.BeerService;
@@ -27,6 +31,19 @@ public class BeerController {
     @GetMapping(BEER_PATH_ID)
     public Mono<BeerDTO> getBeerById(@PathVariable("beerId") Integer beerId) {
         return beerService.getBeerById(beerId);
+    }
+
+    @PostMapping(BEER_PATH)
+    public Mono<ResponseEntity<Void>> createBeer(@RequestBody BeerDTO beerDTO) {
+
+        return beerService.createBeer(beerDTO).map(savedBeer -> {
+            return ResponseEntity
+                    .created(
+                            UriComponentsBuilder
+                                    .fromHttpUrl("http://localhost:8080" + BEER_PATH + "/" + savedBeer.getId())
+                                    .build().toUri())
+                    .build();
+        });
     }
 
 }
