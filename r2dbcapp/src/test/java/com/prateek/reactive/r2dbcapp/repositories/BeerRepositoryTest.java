@@ -5,10 +5,13 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
+import org.springframework.context.annotation.Import;
 
+import com.prateek.reactive.r2dbcapp.config.DatabaseConfig;
 import com.prateek.reactive.r2dbcapp.domain.Beer;
 
 @DataR2dbcTest
+@Import(DatabaseConfig.class)
 public class BeerRepositoryTest {
 
     @Autowired
