@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 @AllArgsConstructor
 public class BeerController {
 
-    public final String BEER_PATH = "/api/v2/beer";
-    public final String BEER_PATH_ID = "/api/v2/beer/{beerId}";
+    public static final String BEER_PATH = "/api/v2/beer";
+    public static final String BEER_PATH_ID = "/api/v2/beer/{beerId}";
     private final BeerService beerService;
 
     @GetMapping(BEER_PATH)
@@ -61,7 +61,7 @@ public class BeerController {
 
     @DeleteMapping(BEER_PATH_ID)
     public Mono<ResponseEntity<Void>> deleteBeer(@PathVariable("beerId") Integer id) {
-        return beerService.deleteBeer(id).map(resp -> ResponseEntity.noContent().build());
+        return beerService.deleteBeer(id).then(Mono.fromCallable(() -> ResponseEntity.noContent().build()));
     }
 
 }
