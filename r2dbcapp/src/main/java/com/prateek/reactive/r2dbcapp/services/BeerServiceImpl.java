@@ -8,6 +8,7 @@ import com.prateek.reactive.r2dbcapp.repositories.BeerRepository;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,11 @@ public class BeerServiceImpl implements BeerService {
     @Override
     public Flux<BeerDTO> listBeers() {
         return beerRepository.findAll().map(beerMapper::beerToBeerDTO);
+    }
+
+    @Override
+    public Mono<BeerDTO> getBeerById(Integer id) {
+        return beerRepository.findById(id).map(beerMapper::beerToBeerDTO);
     }
 
 }
