@@ -1,6 +1,5 @@
 package com.prateek.reactive.r2dbcapp.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,11 +17,11 @@ public class CustomGlobalExceptionHandler {
         return new ResponseEntity<>(
                 CustomResponseExceptionDTO
                         .builder()
-                        .status(HttpStatus.NOT_FOUND.name())
+                        .status(exception.getStatusCode().toString())
                         .path(exchange.getRequest().getPath().toString())
                         .error(exception.getReason())
                         .build(),
-                HttpStatus.NOT_FOUND);
+                exception.getStatusCode());
     }
 
 }
