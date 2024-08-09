@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import com.prateek.reactive.r2dbcapp.model.BeerDTO;
 
@@ -27,24 +28,15 @@ public class BeerControllerTest {
     @Autowired
     WebTestClient webTestClient;
 
-
-
     @Test
-    @Order(5)
-    void testGetBeerById() {
+    @Order(1)
+    void testListBeers() {
         webTestClient
-                .get().uri(BeerController.BEER_PATH_ID, 1)
+                .get().uri(BeerController.BEER_PATH)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-type", MediaType.APPLICATION_JSON_VALUE)
-                .expectBody()
-                .jsonPath("$.id").isEqualTo(1)
-                .jsonPath("$.beerName").isEqualTo("indian pale ale");
-        // EntityExchangeResult<String> returnResult = webTestClient
-        // .get().uri(BeerController.BEER_PATH_ID,1)
-        // .exchange()
-        // .returnResult();
-        // System.out.println(returnResult.getResponseBody());
+                .expectBody().jsonPath("$.size()").isEqualTo(3);
 
     }
 
@@ -74,19 +66,21 @@ public class BeerControllerTest {
     }
 
     @Test
-    @Order(1)
-    void testListBeers() {
-        webTestClient
-                .get().uri(BeerController.BEER_PATH)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().valueEquals("Content-type", MediaType.APPLICATION_JSON_VALUE)
-                .expectBody().jsonPath("$.size()").isEqualTo(3);
+    @Order(4)
+    void testUpdateBeerBadRequest() {
+        BeerDTO testBeer = getTestBeer();
+        testBeer.setBeerName("");
 
+        webTestClient
+                .put().uri(BeerController.BEER_PATH_ID, 4)
+                .body(Mono.just(testBeer), BeerDTO.class)
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void testDeleteBeer() {
         webTestClient
                 .delete().uri(BeerController.BEER_PATH_ID, 4)
@@ -94,7 +88,37 @@ public class BeerControllerTest {
                 .expectStatus().isNoContent();
     }
 
+    @Test
+    @Order(6)
+    void testGetBeerById() {
+        webTestClient
+                .get().uri(BeerController.BEER_PATH_ID, 1)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-type", MediaType.APPLICATION_JSON_VALUE)
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.beerName").isEqualTo("indian pale ale");
+        // EntityExchangeResult<String> returnResult = webTestClient
+        // .get().uri(BeerController.BEER_PATH_ID,1)
+        // .exchange()
+        // .returnResult();
+        // System.out.println(returnResult.getResponseBody());
 
+    }
+
+    @Test
+    @Order(7)
+    void testCreateBeerBadRequest() {
+        BeerDTO testBeer = getTestBeer();
+        testBeer.setBeerName("");
+        webTestClient
+                .post().uri(BeerController.BEER_PATH)
+                .body(Mono.just(testBeer), BeerDTO.class)
+                .header("Content-type", MediaType.APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
 
     BeerDTO getTestBeer() {
         return BeerDTO.builder()
