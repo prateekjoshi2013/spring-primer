@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
@@ -99,16 +100,33 @@ public class BeerControllerTest {
                 .expectBody()
                 .jsonPath("$.id").isEqualTo(1)
                 .jsonPath("$.beerName").isEqualTo("indian pale ale");
-        // EntityExchangeResult<String> returnResult = webTestClient
-        // .get().uri(BeerController.BEER_PATH_ID,1)
-        // .exchange()
-        // .returnResult();
-        // System.out.println(returnResult.getResponseBody());
 
     }
 
     @Test
     @Order(7)
+    void testGetBeerByIdException() {
+
+         webTestClient
+                .get().uri(BeerController.BEER_PATH_ID, 999)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectHeader().valueEquals("Content-type", MediaType.APPLICATION_JSON_VALUE)
+                .expectBody()
+                .jsonPath("$.error").isEqualTo("Beer not found")
+                .jsonPath("$.status").isEqualTo("NOT_FOUND");
+
+        // EntityExchangeResult<String> result = webTestClient
+        // .get().uri(BeerController.BEER_PATH_ID, 999)
+        // .exchange()
+        // .expectStatus().isNotFound()
+        // .expectBody(String.class)
+        // .returnResult();
+        // System.out.println(result.getResponseBody());
+    }
+
+    @Test
+    @Order(8)
     void testCreateBeerBadRequest() {
         BeerDTO testBeer = getTestBeer();
         testBeer.setBeerName("");
