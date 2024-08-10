@@ -1,12 +1,16 @@
 version: '3.8'
 services:
   devcontainer:
+    privileged: true
     build: 
       context: .
       dockerfile: Dockerfile
+    environment:
+      TESTCONTAINERS_HOST_OVERRIDE : host.docker.internal # needed for test container to be able to use host.docker.internal 
     volumes:
       - ../..:/workspaces:cached
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker # needed for docker in docker
+      - /var/run/docker.sock:/var/run/docker.sock # needed for docker in docker
     networks:
       - dev-network
     depends_on:
@@ -31,7 +35,7 @@ services:
       start_period: 30s
       timeout: 120s
     ports:
-      - 3306:3306  # Expose port 5432
+      - 3306:3306  
     networks:
       - dev-network
 
@@ -67,7 +71,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=admin
     ports:
-      - "27017:27017"
+      - "8888:27017"
     networks:
       - dev-network
 
