@@ -68,3 +68,7 @@ COPY ./settings.xml /root/.m2/
     
 # Verify the installation
 RUN java -version
+
+# install docker cli for dind
+
+RUN apk add docker-cli
