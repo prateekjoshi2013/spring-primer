@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../..:/workspaces:cached
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - dev-network
     depends_on:
