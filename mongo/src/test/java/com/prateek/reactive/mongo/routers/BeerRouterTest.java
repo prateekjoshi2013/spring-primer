@@ -15,9 +15,9 @@ import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.prateek.reactive.mongo.domain.BeerDTO;
-import com.prateek.reactive.mongo.services.BeerServiceImplTest;
 
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @ActiveProfiles("default")
 @SpringBootTest
@@ -39,6 +39,16 @@ public class BeerRouterTest {
         webTestClient.get().uri(BeerRouter.BEER_PATH_ID, savedBeer.getId()).exchange().expectStatus().isOk()
                 .expectHeader().valueEquals("Content-type", "application/json")
                 .expectBody().jsonPath("$.size()", hasSize(greaterThan(1)));
+    }
+
+    @Test
+    void testCreateBeerRoute() {
+        webTestClient.post().uri(BeerRouter.BEER_PATH)
+                .body(Mono.just(getTestBeer()), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().exists("location");
     }
 
     public BeerDTO getSavedTestBeer() {

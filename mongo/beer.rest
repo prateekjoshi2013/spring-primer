@@ -6,3 +6,15 @@ GET http://localhost:8080/api/beer
 
 GET http://localhost:8080/api/beer/66b9b6b388bd8c051ca50ae8
 
+### CREATE BEER
+
+POST http://localhost:8080/api/beer
+Content-Type: application/json
+
+{
+  "beerName": "Beer 4",
+  "beerStyle": "PALE_ALE",
+  "upc": "upc",
+  "quantityOnHand": 10,
+  "price": 10
+}
