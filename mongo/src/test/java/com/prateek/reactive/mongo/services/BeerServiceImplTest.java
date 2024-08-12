@@ -2,9 +2,11 @@ package com.prateek.reactive.mongo.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -121,6 +123,18 @@ public class BeerServiceImplTest extends AbstractTestContainer {
     }
 
     @Order(5)
+    @Test
+    void testGetBeerByBeerName() {
+        AtomicReference<BeerDTO> atomicDto = new AtomicReference<>();
+        beerService.getBeerByName(getTestBeer().getBeerName()).subscribe(beer -> {
+            atomicDto.set(beer);
+
+        });
+        await().until(() -> atomicDto.get() != null);
+        assertThat(atomicDto.get().getBeerName()).isEqualTo("My Bear");
+    }
+
+    @Order(6)
     @Test
     void testDeleteBeer() {
         AtomicBoolean finishedDeleting = new AtomicBoolean(false);

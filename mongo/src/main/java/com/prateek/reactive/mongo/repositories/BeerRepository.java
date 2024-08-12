@@ -4,6 +4,8 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 import com.prateek.reactive.mongo.model.Beer;
 
-public interface BeerRepository extends ReactiveMongoRepository<Beer, String> {
+import reactor.core.publisher.Mono;
 
+public interface BeerRepository extends ReactiveMongoRepository<Beer, String> {
+    Mono<Beer> findFirstByAllIgnoreCaseBeerName(String beerName);
 }

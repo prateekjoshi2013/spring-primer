@@ -1,11 +1,7 @@
 package com.prateek.reactive.mongo.services;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -66,6 +62,14 @@ public class BeerServiceImpl implements BeerService {
                 .findById(beerId)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Beer not found")))
                 .then(Mono.empty());
+    }
+
+    @Override
+    public Mono<BeerDTO> getBeerByName(String beerName) {
+        return beerRepository
+                .findFirstByAllIgnoreCaseBeerName(beerName)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Beer not found")))
+                .map(beerMapper::beerToBeerDTO);
     }
 
 }
