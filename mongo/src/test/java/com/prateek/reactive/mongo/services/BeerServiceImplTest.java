@@ -94,14 +94,12 @@ public class BeerServiceImplTest extends AbstractTestContainer {
     @Order(3)
     @Test
     void testListBeers() {
-        AtomicBoolean finishedFetching = new AtomicBoolean(false);
+        AtomicReference<List<BeerDTO>> atomicDto = new AtomicReference<>();
         beerService.listBeers().collectList().subscribe(beers -> {
-            System.out.println(beers);
-            assertThat(beers.size()).isEqualTo(2);
-            finishedFetching.set(true);
+            atomicDto.set(beers);
 
         });
-        await().untilTrue(finishedFetching); // if we dont awit here mongo connection is closed before
+        await().until(() -> atomicDto.get().size()==2); // if we dont awit here mongo connection is closed before
     }
 
     @Order(4)
