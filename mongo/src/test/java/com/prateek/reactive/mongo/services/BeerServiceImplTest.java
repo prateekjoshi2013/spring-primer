@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,6 +24,7 @@ import com.prateek.reactive.mongo.model.Beer;
 import com.prateek.reactive.mongo.repositories.BeerRepository;
 
 import lombok.SneakyThrows;
+import reactor.test.StepVerifier;
 
 // Test do not support @Transactional so we need to run the tests in a particular order since it shares the context
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
@@ -94,12 +96,9 @@ public class BeerServiceImplTest extends AbstractTestContainer {
     @Order(3)
     @Test
     void testListBeers() {
-        AtomicReference<List<BeerDTO>> atomicDto = new AtomicReference<>();
-        beerService.listBeers().collectList().subscribe(beers -> {
-            atomicDto.set(beers);
-
-        });
-        await().until(() -> atomicDto.get().size()==2); // if we dont awit here mongo connection is closed before
+        StepVerifier.create(beerService.listBeers().collectList())
+                .expectNextMatches(beers -> beers.size() > 3)
+                .verifyComplete();
     }
 
     @Order(4)
