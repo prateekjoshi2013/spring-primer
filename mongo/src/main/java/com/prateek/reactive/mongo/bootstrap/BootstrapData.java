@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import com.prateek.reactive.mongo.model.Beer;
 import com.prateek.reactive.mongo.repositories.BeerRepository;
 
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 public class BootstrapData implements CommandLineRunner {
     private final BeerRepository beerRepository;
