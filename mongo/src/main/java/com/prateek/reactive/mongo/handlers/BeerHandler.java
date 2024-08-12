@@ -20,4 +20,10 @@ public class BeerHandler {
                 .ok()
                 .body(beerService.listBeers(), BeerDTO.class);
     }
+
+    public Mono<ServerResponse> getBeerById(ServerRequest request) {
+        return ServerResponse.ok()
+                .body(beerService.findById(request.pathVariable("beerId")), BeerDTO.class);
+    }
+    
 }

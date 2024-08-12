@@ -1,3 +1,8 @@
 ### GET BEERS
 
 GET http://localhost:8080/api/beer
+
+### GET BEERS BY ID
+
+GET http://localhost:8080/api/beer/66b9b6b388bd8c051ca50ae8
+
