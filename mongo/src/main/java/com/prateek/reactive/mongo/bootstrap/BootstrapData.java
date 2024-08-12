@@ -11,6 +11,7 @@ import com.prateek.reactive.mongo.model.Beer;
 import com.prateek.reactive.mongo.repositories.BeerRepository;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 
 @Component
 @RequiredArgsConstructor
@@ -19,12 +20,16 @@ public class BootstrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        beerRepository.deleteAll().doOnSuccess(success -> {
-            loadData();
-        }).subscribe();
+        beerRepository.deleteAll()
+                .thenMany(loadData()) // Chain the loading of data after deletion
+                .collectList().block();
+        // .subscribe(
+        // beer -> System.out.println("Added: " + beer),
+        // error -> System.err.println("Error occurred: " + error),
+        // () -> System.out.println("Data loading complete!"));
     }
 
-    public void loadData() {
+    public Flux<Beer> loadData() {
         List<Beer> beers = Arrays.asList(
                 Beer.builder()
                         .beerName("Beer 1")
@@ -49,7 +54,8 @@ public class BootstrapData implements CommandLineRunner {
                         .build()
 
         );
-        beerRepository.saveAll(beers).collectList().block();
+        return beerRepository.saveAll(beers);
+
     }
 
 }
