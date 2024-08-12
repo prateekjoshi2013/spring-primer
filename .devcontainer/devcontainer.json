@@ -18,7 +18,8 @@
 				"PKief.material-icon-theme",
 				"vmware.vscode-boot-dev-pack",
 				"vscjava.vscode-lombok",
-				"humao.rest-client"
+				"humao.rest-client",
+				"mhutchie.git-graph"
 			]
 		}
 	}
