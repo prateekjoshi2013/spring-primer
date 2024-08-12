@@ -2,9 +2,9 @@ package com.prateek.reactive.mongo.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,7 +23,6 @@ import com.prateek.reactive.mongo.model.Beer;
 import com.prateek.reactive.mongo.repositories.BeerRepository;
 
 import lombok.SneakyThrows;
-import reactor.core.publisher.Mono;
 
 // Test do not support @Transactional so we need to run the tests in a particular order since it shares the context
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
@@ -136,6 +135,16 @@ public class BeerServiceImplTest extends AbstractTestContainer {
 
     @Order(6)
     @Test
+    void testGetBeerByBeerStyle() {
+        AtomicReference<List<BeerDTO>> ref = new AtomicReference<>();
+        beerService.getBeersByBeerStyle("PALE_ALE").collectList().subscribe(foundBeers -> {
+            ref.set(foundBeers);
+        });
+        await().until(() -> ref.get().size() > 0);
+    }
+
+    @Order(7)
+    @Test
     void testDeleteBeer() {
         AtomicBoolean finishedDeleting = new AtomicBoolean(false);
         beerService.deleteBeer(savedBeerId).doOnSuccess(unused -> {
@@ -143,5 +152,4 @@ public class BeerServiceImplTest extends AbstractTestContainer {
         }).subscribe();
         await().untilTrue(finishedDeleting); // if we dont await here mongo connection is closed before
     }
-
 }
