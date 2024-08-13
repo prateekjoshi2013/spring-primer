@@ -51,6 +51,19 @@ public class BeerRouterTest {
                 .expectHeader().exists("location");
     }
 
+    @Test
+    void testUpdateBeerRoute() {
+        BeerDTO savedBeer = getSavedTestBeer();
+        webTestClient.put().uri(BeerRouter.BEER_PATH_ID, savedBeer.getId())
+                .body(Mono.just(getTestBeer()).map(beerDTO -> {
+                    beerDTO.setBeerName("My Updated Beer");
+                    return beerDTO;
+                }), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isNoContent();
+    }
+
     public BeerDTO getSavedTestBeer() {
         FluxExchangeResult<BeerDTO> beerDTOFluxExchangeResult = webTestClient.post().uri(BeerRouter.BEER_PATH)
                 .body(Mono.just(getTestBeer()), BeerDTO.class)
