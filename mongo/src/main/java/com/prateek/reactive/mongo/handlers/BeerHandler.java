@@ -56,4 +56,11 @@ public class BeerHandler {
                 .flatMap(updatedBeer->ServerResponse.noContent().build());
     }
 
+    public Mono<ServerResponse> deleteBeer(ServerRequest request) {
+        return beerService.findById(request.pathVariable("beerId"))
+                        .thenReturn(Mono.fromCallable(
+                                        () -> beerService.deleteBeer(request.pathVariable("beerId"))))
+                        .then(ServerResponse.noContent().build());
+        }
+
 }

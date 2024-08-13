@@ -64,6 +64,15 @@ public class BeerRouterTest {
                 .expectStatus().isNoContent();
     }
 
+    @Test
+    void testDeleteBeerRoute() {
+        BeerDTO savedBeer = getSavedTestBeer();
+        webTestClient.delete().uri(BeerRouter.BEER_PATH_ID, savedBeer.getId())
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isNoContent();
+    }
+
     public BeerDTO getSavedTestBeer() {
         FluxExchangeResult<BeerDTO> beerDTOFluxExchangeResult = webTestClient.post().uri(BeerRouter.BEER_PATH)
                 .body(Mono.just(getTestBeer()), BeerDTO.class)
