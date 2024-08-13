@@ -42,6 +42,13 @@ public class BeerRouterTest {
     }
 
     @Test
+    void testGetBeerByIdException() {
+        webTestClient.get().uri(BeerRouter.BEER_PATH_ID, "dummy").exchange()
+                .expectHeader().valueEquals("Content-type", "application/json")
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     void testCreateBeerRoute() {
         webTestClient.post().uri(BeerRouter.BEER_PATH)
                 .body(Mono.just(getTestBeer()), BeerDTO.class)

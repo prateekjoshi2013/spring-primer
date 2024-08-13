@@ -3,6 +3,7 @@ package com.prateek.reactive.mongo.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.prateek.reactive.mongo.domain.BeerDTO;
@@ -24,7 +25,9 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Mono<BeerDTO> findById(String beerId) {
-        return beerRepository.findById(beerId).map(beerMapper::beerToBeerDTO);
+        return beerRepository.findById(beerId)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Beer Not Found")))
+                .map(beerMapper::beerToBeerDTO);
     }
 
     @Override
