@@ -59,6 +59,17 @@ public class BeerRouterTest {
     }
 
     @Test
+    void testCreateBeerRouteValidationException() {
+        BeerDTO testBeer = getTestBeer();
+        testBeer.setBeerName("");
+        webTestClient.post().uri(BeerRouter.BEER_PATH)
+                .body(Mono.just(testBeer), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
     void testUpdateBeerRoute() {
         BeerDTO savedBeer = getSavedTestBeer();
         webTestClient.put().uri(BeerRouter.BEER_PATH_ID, savedBeer.getId())
@@ -69,6 +80,19 @@ public class BeerRouterTest {
                 .header("Content-Type", "application/json")
                 .exchange()
                 .expectStatus().isNoContent();
+    }
+
+    @Test
+    void testUpdateBeerRouteValidationException() {
+        BeerDTO savedBeer = getSavedTestBeer();
+        webTestClient.put().uri(BeerRouter.BEER_PATH_ID, savedBeer.getId())
+                .body(Mono.just(getTestBeer()).map(beerDTO -> {
+                    beerDTO.setBeerName("");
+                    return beerDTO;
+                }), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test
