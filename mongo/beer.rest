@@ -4,7 +4,7 @@ GET http://localhost:8080/api/beer
 
 ### GET BEERS BY ID
 
-GET http://localhost:8080/api/beer/66b9b6b388bd8c051ca50ae8
+GET http://localhost:8080/api/beer/66bacef39a965d41443ab1a
 
 ### CREATE BEER
 
@@ -13,6 +13,19 @@ Content-Type: application/json
 
 {
   "beerName": "Beer 4",
+  "beerStyle": "PALE_ALE",
+  "upc": "upc",
+  "quantityOnHand": 10,
+  "price": 10
+}
+
+### UPDATE BEER
+
+PUT http://localhost:8080/api/beer/66bad24270ebec2471c78ac6
+Content-Type: application/json
+
+{
+  "beerName": "Beer 5",
   "beerStyle": "PALE_ALE",
   "upc": "upc",
   "quantityOnHand": 10,

@@ -72,6 +72,18 @@ public class BeerRouterTest {
     }
 
     @Test
+    void testUpdateBeerByIdException() {
+        webTestClient.put().uri(BeerRouter.BEER_PATH_ID, "dummy")
+                .body(Mono.just(getTestBeer()).map(beerDTO -> {
+                    beerDTO.setBeerName("My Updated Beer");
+                    return beerDTO;
+                }), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
     void testDeleteBeerRoute() {
         BeerDTO savedBeer = getSavedTestBeer();
         webTestClient.delete().uri(BeerRouter.BEER_PATH_ID, savedBeer.getId())
