@@ -79,6 +79,7 @@ public class BeerServiceImpl implements BeerService {
     public Flux<BeerDTO> getBeersByBeerStyle(String beerStyle) {
         return beerRepository
                 .findByBeerStyle(beerStyle)
+                .doOnNext(beer->System.out.println(beer))
                 .map(beerMapper::beerToBeerDTO);
     }
 

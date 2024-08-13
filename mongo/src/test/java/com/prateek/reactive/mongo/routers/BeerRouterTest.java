@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.prateek.reactive.mongo.domain.BeerDTO;
 
@@ -31,6 +32,15 @@ public class BeerRouterTest {
         webTestClient.get().uri(BeerRouter.BEER_PATH).exchange().expectStatus().isOk()
                 .expectHeader().valueEquals("Content-type", "application/json")
                 .expectBody().jsonPath("$.size()", hasSize(greaterThan(1)));
+    }
+
+    @Test
+    void testListBeerRouteByBeerStyle() {
+        String BEER_STYLE = "PALE_ALE";
+        webTestClient.get().uri(UriComponentsBuilder.fromPath(BeerRouter.BEER_PATH)
+                .queryParam("beerStyle", BEER_STYLE).build().toUri()).exchange().expectStatus().isOk()
+                .expectHeader().valueEquals("Content-type", "application/json")
+                .expectBody().jsonPath("$.size()", hasSize(greaterThan(0)));
     }
 
     @Test
