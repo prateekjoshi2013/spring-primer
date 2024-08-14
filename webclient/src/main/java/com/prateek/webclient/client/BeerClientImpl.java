@@ -5,6 +5,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import reactor.core.publisher.Flux;
 
 @Service
@@ -27,6 +29,12 @@ public class BeerClientImpl implements BeerClient {
     public Flux<Map> listBeerMap() {
        return webClient.get().uri(BEER_PATH, Map.class)
        .retrieve().bodyToFlux(Map.class);
+    }
+
+    @Override
+    public Flux<JsonNode> listBeerJsonNode() {
+        return webClient.get().uri(BEER_PATH, JsonNode.class)
+        .retrieve().bodyToFlux(JsonNode.class);
     }
 
 }
