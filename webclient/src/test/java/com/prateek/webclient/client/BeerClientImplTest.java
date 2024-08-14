@@ -1,14 +1,20 @@
 package com.prateek.webclient.client;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.prateek.webclient.model.BeerDTO;
+
 import lombok.SneakyThrows;
+import reactor.test.StepVerifier;
 
 @SpringBootTest
 public class BeerClientImplTest {
@@ -57,5 +63,31 @@ public class BeerClientImplTest {
             atomicBoolean.set(true);
         });
         await().untilTrue(atomicBoolean);
+    }
+
+    @Test
+    void testGetByBeerIdByContent() {
+
+        List<BeerDTO> collectedItems = new ArrayList<>();
+        StepVerifier.create(
+                beerClientImpl.listBeerDto()
+                        .flatMap(beer -> beerClientImpl.getByBeerId(beer.getId())))
+                .recordWith(() -> collectedItems) // Collect items
+                .thenConsumeWhile(item -> true) // Continue until all items are consumed
+                .verifyComplete();
+        System.out.println(collectedItems);
+        assertTrue(
+                collectedItems.stream().filter(beer -> beer.getBeerStyle().equals("PALE_ALE")).findAny().isPresent());
+    }
+    // .expectNextCount(3) // Expect exactly three elements to be emitted
+
+    @Test
+    void testGetByBeerIdCount() {
+
+        StepVerifier.create(
+                beerClientImpl.listBeerDto()
+                        .flatMap(beer -> beerClientImpl.getByBeerId(beer.getId())))
+                .expectNextCount(3) // Expect exactly three elements to be emitted
+                .verifyComplete();
     }
 }

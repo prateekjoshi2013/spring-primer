@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.prateek.webclient.model.BeerDTO;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface BeerClient {
     Flux<String> listBeer();
@@ -15,4 +16,6 @@ public interface BeerClient {
     Flux<JsonNode> listBeerJsonNode();
 
     Flux<BeerDTO> listBeerDto();
+
+    Mono<BeerDTO> getByBeerId(String beerId);
 }
