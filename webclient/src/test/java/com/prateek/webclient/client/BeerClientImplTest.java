@@ -90,4 +90,16 @@ public class BeerClientImplTest {
                 .expectNextCount(3) // Expect exactly three elements to be emitted
                 .verifyComplete();
     }
+
+    @Test
+    void testGetByBeerStyle() {
+        List<BeerDTO> collectedItems = new ArrayList<>();
+        StepVerifier.create(beerClientImpl.getBeersByStyle("PALE_ALE"))
+                .recordWith(() -> collectedItems) // Collect items
+                .thenConsumeWhile(item -> true) // Continue until all items are consumed
+                .verifyComplete();
+        System.out.println(collectedItems);
+        assertTrue(collectedItems.size() == 1);
+    }
+
 }
