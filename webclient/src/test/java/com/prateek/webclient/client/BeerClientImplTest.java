@@ -21,4 +21,14 @@ public class BeerClientImplTest {
 
         Thread.sleep(1000l);
     }
+
+    @Test
+    @SneakyThrows
+    void testListBeerMap() {
+        beerClientImpl.listBeer().subscribe(response -> {
+            System.out.println(response);
+        });
+
+        Thread.sleep(1000l);
+    }
 }
