@@ -1,5 +1,9 @@
 package com.prateek.webclient.client;
 
+import static org.awaitility.Awaitility.await;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,20 +19,23 @@ public class BeerClientImplTest {
     @Test
     @SneakyThrows
     void testListBeer() {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         beerClientImpl.listBeer().subscribe(response -> {
             System.out.println(response);
+            atomicBoolean.set(true);
         });
-
-        Thread.sleep(1000l);
+        await().untilTrue(atomicBoolean);
     }
 
     @Test
     @SneakyThrows
     void testListBeerMap() {
-        beerClientImpl.listBeer().subscribe(response -> {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        beerClientImpl.listBeerMap().subscribe(response -> {
             System.out.println(response);
+            atomicBoolean.set(true);
         });
+        await().untilTrue(atomicBoolean);
 
-        Thread.sleep(1000l);
     }
 }
