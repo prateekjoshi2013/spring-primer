@@ -34,4 +34,4 @@ Content-Type: application/json
 
 ### DELETE BEER
 
-DELETE http://localhost:8080/api/beer/66bd4c126d3f0b1512490582
+DELETE http://localhost:8080/api/beer/66bd5f3a6d3f0b1512490592

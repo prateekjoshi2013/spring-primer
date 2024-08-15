@@ -102,4 +102,16 @@ public class BeerClientImpl implements BeerClient {
                 });
     }
 
+    @Override
+    public Mono<Void> deleteBeer(String beerId) {
+        System.out.println("-->"+beerId);
+        return webClient
+        .delete()
+        .uri(BEER_PATH_ID, beerId)
+        .retrieve()
+        .toBodilessEntity()
+        .doOnNext(body -> System.out.println("-->" + body))
+        .then();
+    }
+
 }

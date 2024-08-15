@@ -2,6 +2,8 @@ package com.prateek.webclient.client;
 
 import java.math.BigDecimal;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -84,11 +86,11 @@ public class BeerClientImplTest {
     // @Test
     // void testGetByBeerIdCount() {
 
-    //     StepVerifier.create(
-    //             beerClientImpl.listBeerDto()
-    //                     .flatMap(beer -> beerClientImpl.getByBeerId(beer.getId())))
-    //             .expectNextCount(3) // Expect exactly three elements to be emitted
-    //             .verifyComplete();
+    // StepVerifier.create(
+    // beerClientImpl.listBeerDto()
+    // .flatMap(beer -> beerClientImpl.getByBeerId(beer.getId())))
+    // .expectNextCount(3) // Expect exactly three elements to be emitted
+    // .verifyComplete();
     // }
 
     @Test
@@ -115,13 +117,14 @@ public class BeerClientImplTest {
 
     @Test
     void testUpdateBeerById() {
-        BeerDTO beerDTO = getBeerDTO();;
+        BeerDTO beerDTO = getBeerDTO();
+        ;
         List<BeerDTO> collectedItems = new ArrayList<>();
         StepVerifier.create(
                 beerClientImpl.listBeerDto().last()
                         .flatMap(beer -> {
-                            beerDTO.setBeerName(beer.getBeerName()+"Updated");
-                            return beerClientImpl.updateBeer(beer.getId(),beerDTO);
+                            beerDTO.setBeerName(beer.getBeerName() + "Updated");
+                            return beerClientImpl.updateBeer(beer.getId(), beerDTO);
                         }))
                 .recordWith(() -> collectedItems) // Collect items
                 .thenConsumeWhile(item -> true) // Continue until all items are consumed
@@ -129,6 +132,21 @@ public class BeerClientImplTest {
         System.out.println(collectedItems);
         assertTrue(
                 collectedItems.stream().filter(beer -> beer.getBeerName().contains("Updated")).findAny().isPresent());
+    }
+
+    @Test
+    void testDeleteBeerById() {
+        AtomicBoolean finishedDeleting = new AtomicBoolean(false);
+        beerClientImpl.listBeerDto().next()
+                .flatMap(beer -> {
+                    return beerClientImpl.deleteBeer(beer.getId());
+                })
+                .doOnSuccess(success -> {
+                    assertNull(success);
+                    finishedDeleting.set(true);
+                })
+                .subscribe();
+        await().untilTrue(finishedDeleting);
     }
 
     BeerDTO getBeerDTO() {
@@ -139,6 +157,5 @@ public class BeerClientImplTest {
                 .quantityOnHand(23)
                 .upc("upc").build();
     }
-
 
 }
