@@ -2,6 +2,7 @@ package com.prateek.webclient.client;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -17,6 +18,9 @@ public class BeerClientImpl implements BeerClient {
     private static final String BEER_PATH = "/api/beer";
     private static final String BEER_PATH_ID = "/api/beer/{beerId}";
     private final WebClient webClient;
+
+    @Value("${webclient.rooturl}")
+    private String rootUrl;
 
     public BeerClientImpl(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
@@ -58,6 +62,24 @@ public class BeerClientImpl implements BeerClient {
                 .uri(uriBuilder -> uriBuilder.path(BEER_PATH)
                         .queryParam("beerStyle", beerStyle).build())
                 .retrieve().bodyToFlux(BeerDTO.class);
+    }
+
+    @Override
+    public Mono<BeerDTO> createBeer(BeerDTO beerDTO) {
+        return webClient.post().uri(BEER_PATH)
+                .bodyValue(beerDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .doOnNext(body -> {
+                    System.out.println("-->" + body);
+                    System.out.println();
+                })
+                .flatMap(body -> webClient.get()
+                        .uri(rootUrl + body.getHeaders().getLocation().toString())
+                        .retrieve().bodyToMono(BeerDTO.class))
+                .doOnNext(beer -> {
+                    System.out.println(beer);
+                });
     }
 
 }
