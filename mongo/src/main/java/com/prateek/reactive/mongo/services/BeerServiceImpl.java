@@ -64,7 +64,7 @@ public class BeerServiceImpl implements BeerService {
         return beerRepository
                 .findById(beerId)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Beer not found")))
-                .then(Mono.empty());
+                .then(beerRepository.deleteById(beerId));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class BeerServiceImpl implements BeerService {
     public Flux<BeerDTO> getBeersByBeerStyle(String beerStyle) {
         return beerRepository
                 .findByBeerStyle(beerStyle)
-                .doOnNext(beer->System.out.println(beer))
+                .doOnNext(beer -> System.out.println(beer))
                 .map(beerMapper::beerToBeerDTO);
     }
 

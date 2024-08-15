@@ -31,3 +31,7 @@ Content-Type: application/json
   "quantityOnHand": 10,
   "price": 10
 }
+
+### DELETE BEER
+
+DELETE http://localhost:8080/api/beer/66bd4c126d3f0b1512490582
