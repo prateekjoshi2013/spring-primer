@@ -113,6 +113,24 @@ public class BeerClientImplTest {
         assertTrue(collectedItems.size() == 1);
     }
 
+    @Test
+    void testUpdateBeerById() {
+        BeerDTO beerDTO = getBeerDTO();;
+        List<BeerDTO> collectedItems = new ArrayList<>();
+        StepVerifier.create(
+                beerClientImpl.listBeerDto().last()
+                        .flatMap(beer -> {
+                            beerDTO.setBeerName(beer.getBeerName()+"Updated");
+                            return beerClientImpl.updateBeer(beer.getId(),beerDTO);
+                        }))
+                .recordWith(() -> collectedItems) // Collect items
+                .thenConsumeWhile(item -> true) // Continue until all items are consumed
+                .verifyComplete();
+        System.out.println(collectedItems);
+        assertTrue(
+                collectedItems.stream().filter(beer -> beer.getBeerName().contains("Updated")).findAny().isPresent());
+    }
+
     BeerDTO getBeerDTO() {
         return BeerDTO.builder()
                 .beerName("My Crafted Beer")

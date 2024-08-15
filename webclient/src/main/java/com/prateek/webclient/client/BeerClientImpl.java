@@ -82,4 +82,24 @@ public class BeerClientImpl implements BeerClient {
                 });
     }
 
+    @Override
+    public Mono<BeerDTO> updateBeer(String beerId, BeerDTO beerDTO) {
+        return webClient
+                .put()
+                .uri(BEER_PATH_ID, beerId)
+                .bodyValue(beerDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .doOnNext(body -> {
+                    System.out.println("-->" + body);
+                    System.out.println();
+                })
+                .flatMap(body -> webClient.get()
+                        .uri(rootUrl + BEER_PATH_ID, beerId)
+                        .retrieve().bodyToMono(BeerDTO.class))
+                .doOnNext(beer -> {
+                    System.out.println(beer);
+                });
+    }
+
 }
