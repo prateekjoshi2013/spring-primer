@@ -56,6 +56,11 @@
 			<artifactId>awaitility</artifactId>
 			<version>4.2.2</version>
 		</dependency>
+		<!-- dependency for enabling oauth2 authentication -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
