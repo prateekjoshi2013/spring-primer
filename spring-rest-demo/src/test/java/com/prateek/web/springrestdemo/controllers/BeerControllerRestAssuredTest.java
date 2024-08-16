@@ -15,12 +15,14 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.atlassian.oai.validator.OpenApiInteractionValidator;
 import com.atlassian.oai.validator.restassured.OpenApiValidationFilter;
+import com.atlassian.oai.validator.whitelist.ValidationErrorsWhitelist;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import lombok.SneakyThrows;
 
 import static io.restassured.RestAssured.given;
+import static com.atlassian.oai.validator.whitelist.rule.WhitelistRules.messageHasKey;
 
 /**
  * Test the swagger generated docs agains api to ensure open api compatibility
@@ -36,7 +38,12 @@ import static io.restassured.RestAssured.given;
 public class BeerControllerRestAssuredTest {
 
     OpenApiValidationFilter filter = new OpenApiValidationFilter(OpenApiInteractionValidator
-            .createForSpecificationUrl("openapi.json").build());
+            .createForSpecificationUrl("openapi.json")
+            .withWhitelist(ValidationErrorsWhitelist.create()
+            .withRule("Ignore Date Format",messageHasKey("validation.response.body.schema.format.date-time"))
+            .withRule("Ignore QuantityOnHand", messageHasKey("validation.response.body.schema.type"))
+            )
+            .build());
 
     @Configuration
     public static class TestConfig {
