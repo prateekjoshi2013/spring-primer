@@ -127,6 +127,21 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
+		<!-- swagger/openapi spec/doc gen dependencies refer:
+		https://springdoc.org/#migrating-from-springdoc-v1 -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<!-- needed for spring security features -->
+			<artifactId>springdoc-openapi-starter-common</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<!-- needed for spring web mvc  -->
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
