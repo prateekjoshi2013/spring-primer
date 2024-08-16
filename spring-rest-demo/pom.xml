@@ -153,6 +153,11 @@
 			<version>2.41.0</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- enabling actuator endpoint -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
