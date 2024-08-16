@@ -2,6 +2,12 @@
 
 GET http://localhost:8081/actuator/health
 
+### Kubernetes liveness Endpoint
+GET http://localhost:8081/actuator/health/liveness
+
+### Kubernetes readiness Endpoints
+GET http://localhost:8081/actuator/health/readiness
+
 
 ### Get Token from auth server
 POST http://localhost:9000/oauth2/token
