@@ -25,6 +25,12 @@ install:
 deploy:
 	mvn deploy
 
+# Rule to run verify phase which generates swagger/openapi spec
+# verify step does not run compile step so run it after compile
+verify:
+	mvn verify -Dspring.profiles.active=default 
+
+
 # Rule to test with mysql
 test-mysql:
 	mvn test -Dspring.profiles.active=localmysql
@@ -32,6 +38,13 @@ test-mysql:
 # Rule to start spring boot app with mysql
 run-mysql:
 	mvn spring-boot:run -Dspring-boot.run.profiles=localmysql
+
+# cleans compiles tests and generates swagger doc
+verify-gen: clean test verify
+
+# run the rest assured tests with test profile
+test-rest:
+	mvn clean compile test -Dspring.profiles.active=test
 
 # Phony targets to avoid conflicts with files of the same name
 .PHONY: all clean compile test package install deploy test-mysql

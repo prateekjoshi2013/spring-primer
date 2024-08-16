@@ -46,7 +46,7 @@ services:
       mymongodb:
         condition: service_healthy
     ports:
-      - 8081:8081
+      - 8085:8081
     environment:
       ME_CONFIG_MONGODB_ENABLE_ADMIN  : true          
       ME_CONFIG_MONGODB_PORT          : 27017           
