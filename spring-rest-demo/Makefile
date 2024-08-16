@@ -42,5 +42,9 @@ run-mysql:
 # cleans compiles tests and generates swagger doc
 verify-gen: clean test verify
 
+# run the rest assured tests with test profile
+test-rest:
+	mvn clean compile test -Dspring.profiles.active=test
+
 # Phony targets to avoid conflicts with files of the same name
 .PHONY: all clean compile test package install deploy test-mysql
