@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.atlassian.oai.validator.OpenApiInteractionValidator;
+import com.atlassian.oai.validator.restassured.OpenApiValidationFilter;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import lombok.SneakyThrows;
@@ -31,6 +34,10 @@ import static io.restassured.RestAssured.given;
 @ComponentScan(basePackages = "com.prateek.web.springrestdemo") // to enable component scan for all other classes except
                                                                 // SpringSpecConfig
 public class BeerControllerRestAssuredTest {
+
+    OpenApiValidationFilter filter = new OpenApiValidationFilter(OpenApiInteractionValidator
+            .createForSpecificationUrl("openapi.json").build());
+
     @Configuration
     public static class TestConfig {
         @Bean
@@ -56,6 +63,7 @@ public class BeerControllerRestAssuredTest {
     void testListBeers() {
         given().contentType(ContentType.JSON)
                 .when()
+                .filter(filter) // tests requests and response agains the generaed openapi spec
                 .get("/api/v1/beer")
                 .then()
                 .assertThat().statusCode(200);
