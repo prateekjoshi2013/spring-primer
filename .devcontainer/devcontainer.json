@@ -19,7 +19,8 @@
 				"vmware.vscode-boot-dev-pack",
 				"vscjava.vscode-lombok",
 				"humao.rest-client",
-				"mhutchie.git-graph"
+				"mhutchie.git-graph",
+				"redhat.vscode-yaml"
 			]
 		}
 	}
