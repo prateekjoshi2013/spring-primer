@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: spring-rest-mvc
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/**
+        - id: spring-webflux
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v2/**            
+        - id: spring-webflux-fn
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/**            
+# enable logging
+#       httpserver:
+#         wiretap: true
+#       httpclient:
+#         wiretap: true
+# 
+# logging:
+#   level:
+#     root: error
+#     reactor:
+#         netty: trace
+#     '[org.springframework.cloud.gateway]': trace
+#     '[org.springframework.http.server.reactive]': trace 
