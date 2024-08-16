@@ -1,3 +1,8 @@
+### Actuator Endpoint
+
+GET http://localhost:8081/actuator/health
+
+
 ### Get Token from auth server
 POST http://localhost:9000/oauth2/token
 Content-Type: application/x-www-form-urlencoded
