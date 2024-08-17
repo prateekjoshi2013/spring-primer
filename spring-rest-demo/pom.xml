@@ -178,6 +178,11 @@
 			<artifactId>logbook-logstash</artifactId>
 			<version>${logbook.version}</version>
 		</dependency>
+		<!-- enabling caching -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
