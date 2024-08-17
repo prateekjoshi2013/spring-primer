@@ -1,0 +1,9 @@
+### Actuator Endpoint
+
+GET http://localhost:9000/actuator/health
+
+### Kubernetes liveness Endpoint
+GET http://localhost:9000/actuator/health/liveness
+
+### Kubernetes readiness Endpoints
+GET http://localhost:9000/actuator/health/readiness
