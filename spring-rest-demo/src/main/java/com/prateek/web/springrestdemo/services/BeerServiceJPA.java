@@ -60,9 +60,12 @@ public class BeerServiceJPA implements BeerService {
         }).orElseThrow(() -> new NoBeerFoundException(id.toString()));
     }
 
+    @Cacheable(cacheNames = "beerListCache")
+    // creates a default key by combining all params
     @Override
     public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory, Integer pageNumber,
             Integer pageSize) {
+        log.info("Get Beer List - in service");
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize);
         Page<Beer> beerPage;
         if (StringUtils.hasText(beerName) && beerStyle != null) {
