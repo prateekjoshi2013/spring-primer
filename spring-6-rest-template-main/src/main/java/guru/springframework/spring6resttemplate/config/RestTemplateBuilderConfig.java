@@ -12,38 +12,43 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
 @Configuration
 public class RestTemplateBuilderConfig {
 
-    @Value("${rest.template.beer.base.url}")
-    private String beerBaseUrl;
+        @Value("${rest.template.beer.base.url}")
+        private String beerBaseUrl;
 
-    @Bean
-    OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager(
-            ClientRegistrationRepository clientRegistrationRepository,
-            OAuth2AuthorizedClientService oAuth2AuthorizedClientService) {
-        OAuth2AuthorizedClientProvider oAuth2AuthorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials().build();
+        @Bean
+        OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager(
+                        ClientRegistrationRepository clientRegistrationRepository,
+                        OAuth2AuthorizedClientService oAuth2AuthorizedClientService) {
+                OAuth2AuthorizedClientProvider oAuth2AuthorizedClientProvider = OAuth2AuthorizedClientProviderBuilder
+                                .builder()
+                                .clientCredentials().build();
 
-        AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceOAuth2AuthorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-                clientRegistrationRepository, oAuth2AuthorizedClientService);
-        authorizedClientServiceOAuth2AuthorizedClientManager
-                .setAuthorizedClientProvider(oAuth2AuthorizedClientProvider);
-        return authorizedClientServiceOAuth2AuthorizedClientManager;
-    }
+                AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceOAuth2AuthorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(
+                                clientRegistrationRepository, oAuth2AuthorizedClientService);
+                authorizedClientServiceOAuth2AuthorizedClientManager
+                                .setAuthorizedClientProvider(oAuth2AuthorizedClientProvider);
+                return authorizedClientServiceOAuth2AuthorizedClientManager;
+        }
 
-    @Bean
-    RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer,
-            OAuthClientInterceptor oAuthClientInterceptor) {
-        RestTemplateBuilder builder = configurer
-                // sets up resttemplate builder with spring defaults
-                .configure(new RestTemplateBuilder())
-                .additionalInterceptors(oAuthClientInterceptor);
-        // Now we will override some base uri settings
-        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(beerBaseUrl);
-        // set the uri builder factory in the builder and return the builder
-        return builder.uriTemplateHandler(uriBuilderFactory);
-    }
+        @Bean
+        RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer,
+                        OAuthClientInterceptor oAuthClientInterceptor) {
+                LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor = new LogbookClientHttpRequestInterceptor(
+                                Logbook.builder().build());
+                RestTemplateBuilder builder = configurer
+                                // sets up resttemplate builder with spring defaults
+                                .configure(new RestTemplateBuilder())
+                                .additionalInterceptors(oAuthClientInterceptor, logbookClientHttpRequestInterceptor);
+                // Now we will override some base uri settings
+                DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(beerBaseUrl);
+                // set the uri builder factory in the builder and return the builder
+                return builder.uriTemplateHandler(uriBuilderFactory);
+        }
 
 }

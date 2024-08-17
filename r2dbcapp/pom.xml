@@ -31,6 +31,8 @@
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.6.0.RC1</org.mapstruct.version>
 		<lombok.version>1.18.32</lombok.version>
+		<logbook.version>3.9.0</logbook.version>
+		<logstash.logback.encoder.version>8.0</logstash.logback.encoder.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -96,6 +98,30 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- dependencies for configuring logbook -->
+		<!-- enabling logbook request response tracing -->
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>logbook-spring-boot-starter</artifactId>
+			<version>${logbook.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>logbook-spring-boot-webflux-autoconfigure</artifactId>
+			<version>${logbook.version}</version>
+		</dependency>
+		<!-- encodes the spring logback logs in json format -->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>${logstash.logback.encoder.version}</version>
+		</dependency>
+		<!-- enabling logbook logstash compatibility (makes logbook logs also in json encoding) -->
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>logbook-logstash</artifactId>
+			<version>${logbook.version}</version>
 		</dependency>
 	</dependencies>
 
