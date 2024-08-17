@@ -34,3 +34,14 @@ spring:
 #         netty: trace
 #     '[org.springframework.cloud.gateway]': trace
 #     '[org.springframework.http.server.reactive]': trace 
+# kubernetes endpoint configuration
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
