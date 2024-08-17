@@ -31,6 +31,7 @@
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.6.0.RC1</org.mapstruct.version>
 		<lombok.version>1.18.32</lombok.version>
+		<logbook.version>3.9.0</logbook.version>
 	</properties>
 	<dependencies>
 		<!-- spring boot web dependency for web apps 
@@ -158,6 +159,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<!-- enabling logbook request response tracing -->
+		 <dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>logbook-spring-boot-starter</artifactId>
+			<version>${logbook.version}</version>
+		 </dependency>
 	</dependencies>
 
 	<build>
