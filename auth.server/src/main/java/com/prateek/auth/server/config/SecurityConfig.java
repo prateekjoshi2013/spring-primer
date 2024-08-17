@@ -44,8 +44,9 @@ public class SecurityConfig {
         @Bean
         @Order(1)
         SecurityFilterChain actuatoSecurityFilterChain(HttpSecurity http) throws Exception {
-                http.authorizeHttpRequests(
-                                authorize -> authorize.requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll());
+                http.securityMatcher(EndpointRequest.toAnyEndpoint())
+                                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+
                 return http.build();
         }
 
