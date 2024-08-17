@@ -1,10 +1,11 @@
 package com.prateek.web.springrestdemo.services;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,13 +21,16 @@ import com.prateek.web.springrestdemo.model.BeerStyle;
 import com.prateek.web.springrestdemo.repositories.BeerRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Primary
 @Service
 @RequiredArgsConstructor
 public class BeerServiceJPA implements BeerService {
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
+    private final CacheManager cacheManager;
 
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int DEFAULT_PAGE_SIZE = 25;
@@ -42,6 +46,8 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public void deletedById(UUID beerId) {
+        cacheManager.getCache("beerCache").evict(beerId);
+        cacheManager.getCache("beerListCache").clear();
         if (beerRepository.existsById(beerId)) {
             beerRepository.deleteById(beerId);
         } else {
@@ -49,16 +55,21 @@ public class BeerServiceJPA implements BeerService {
         }
     }
 
+    @Cacheable(cacheNames = "beerCache", key = "#id")
     @Override
     public Optional<BeerDTO> getBeerById(UUID id) {
+        log.info("Get Beer by Id - in service");
         return beerRepository.findById(id).map(beer -> {
             return Optional.of(beerMapper.beerToBeerDto(beer));
         }).orElseThrow(() -> new NoBeerFoundException(id.toString()));
     }
 
+    @Cacheable(cacheNames = "beerListCache")
+    // creates a default key by combining all params
     @Override
     public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInvetory, Integer pageNumber,
             Integer pageSize) {
+        log.info("Get Beer List - in service");
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize);
         Page<Beer> beerPage;
         if (StringUtils.hasText(beerName) && beerStyle != null) {
@@ -86,11 +97,14 @@ public class BeerServiceJPA implements BeerService {
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
+        cacheManager.getCache("beerListCache").clear();
         return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beer)));
     }
 
     @Override
     public Optional<BeerDTO> updatedById(UUID beerId, BeerDTO beer) {
+        cacheManager.getCache("beerCache").evict(beerId);
+        cacheManager.getCache("beerListCache").clear();
         return beerRepository
                 .findById(beerId)
                 .map(oldBeer -> {
