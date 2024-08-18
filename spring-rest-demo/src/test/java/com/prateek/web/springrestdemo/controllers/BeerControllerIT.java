@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -39,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prateek.web.springrestdemo.config.SpringSecConfig;
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
+import com.prateek.web.springrestdemo.events.BeerCreatedEvent;
 import com.prateek.web.springrestdemo.mappers.BeerMapper;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.model.BeerStyle;
@@ -46,10 +50,14 @@ import com.prateek.web.springrestdemo.repositories.BeerRepository;
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 
+@RecordApplicationEvents
 @EnabledIf(value = "#{{'localmysql', 'default'}.contains(environment.getActiveProfiles()[0])}", loadContext = true)
 @SpringBootTest
 public class BeerControllerIT {
 
+    @Autowired
+    ApplicationEvents applicationEvents;
+    
     @Autowired
     BeerController beerController;
 
@@ -114,7 +122,7 @@ public class BeerControllerIT {
 
     @SneakyThrows
     @Test
-    void testSaveBeerEndToEnd() {
+    void testSaveBeerEndToEndWithError() {
         BeerDTO beer = BeerDTO.builder()
                 .beerName("My Beer asdasdjlkasd laksjd alsdjla dlakdjlajdlakjdlajkdlajdlajldjaldjlajdlkj")
                 .beerStyle(BeerStyle.ALE)
@@ -129,6 +137,29 @@ public class BeerControllerIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @SneakyThrows
+    @Test
+    void testSaveBeerEndToEnd() {
+        BeerDTO beer = BeerDTO.builder()
+                .beerName("My Home Crafted Beer")
+                .beerStyle(BeerStyle.ALE)
+                .price(BigDecimal.valueOf(1.12))
+                .upc("upc")
+                .build();
+        mockMvc.perform(
+                post(BeerController.API_V1_BEER)
+                        .with(jwtRequestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(jsonPath("$.beerStyle", is("ALE")));
+
+        Assertions.assertEquals(1, applicationEvents.stream(BeerCreatedEvent.class).count());
+
     }
 
     @Transactional
