@@ -104,6 +104,8 @@ public class BeerServiceJPA implements BeerService {
     public BeerDTO saveNewBeer(BeerDTO beer) {
         cacheManager.getCache("beerListCache").clear();
         Beer savedBeer = beerRepository.save(beerMapper.beerDtoToBeer(beer));
+        System.out.println("Saving thread id:" + Thread.currentThread().getId());
+        System.out.println("Saving thread name:" + Thread.currentThread().getName());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         applicationEventPublisher
                 .publishEvent(BeerCreatedEvent.builder().beer(savedBeer).authentication(authentication).build());
