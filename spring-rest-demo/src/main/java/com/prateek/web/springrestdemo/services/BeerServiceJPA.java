@@ -6,15 +6,19 @@ import java.util.UUID;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.prateek.web.springrestdemo.domain.entities.Beer;
 import com.prateek.web.springrestdemo.domain.exceptions.NoBeerFoundException;
+import com.prateek.web.springrestdemo.events.BeerCreatedEvent;
 import com.prateek.web.springrestdemo.mappers.BeerMapper;
 import com.prateek.web.springrestdemo.model.BeerDTO;
 import com.prateek.web.springrestdemo.model.BeerStyle;
@@ -31,6 +35,7 @@ public class BeerServiceJPA implements BeerService {
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
     private final CacheManager cacheManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int DEFAULT_PAGE_SIZE = 25;
@@ -98,7 +103,11 @@ public class BeerServiceJPA implements BeerService {
     @Override
     public BeerDTO saveNewBeer(BeerDTO beer) {
         cacheManager.getCache("beerListCache").clear();
-        return beerMapper.beerToBeerDto(beerRepository.save(beerMapper.beerDtoToBeer(beer)));
+        Beer savedBeer = beerRepository.save(beerMapper.beerDtoToBeer(beer));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        applicationEventPublisher
+                .publishEvent(BeerCreatedEvent.builder().beer(savedBeer).authentication(authentication).build());
+        return beerMapper.beerToBeerDto(savedBeer);
     }
 
     @Override
