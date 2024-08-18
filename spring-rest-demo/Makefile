@@ -36,12 +36,12 @@ test-mysql:
 	mvn test -Dspring.profiles.active=localmysql
 
 # Rule to start spring boot app with mysql
-run-mysql:
-	mvn spring-boot:run -Dspring-boot.run.profiles=default
+run-default:
+	mvn clean compile spring-boot:run -Dspring-boot.run.profiles=default
 
 # Rule to start spring boot app with mysql
 run-mysql:
-	mvn spring-boot:run -Dspring-boot.run.profiles=localmysql
+	mvn clean compile spring-boot:run -Dspring-boot.run.profiles=localmysql
 
 # cleans compiles tests and generates swagger doc
 verify-gen: clean test verify
