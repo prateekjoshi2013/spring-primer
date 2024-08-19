@@ -1,0 +1,187 @@
+services:
+  gateway:
+    container_name: gateway
+    image: gateway:latest
+    platform: linux/amd64
+    environment:
+      SPRING_APPLICATION_NAME: gateway
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      auth-server:
+        condition: service_healthy
+      reactive:
+        condition: service_healthy
+      reactive-mongo:
+        condition: service_healthy
+      rest-mvc:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - 8080:8080
+    networks:
+      - compose-network
+
+  auth-server:
+    container_name: auth-server
+    image: auth.server:latest
+    platform: linux/amd64
+    environment:
+      SPRING_APPLICATION_NAME: auth-server
+      SERVER_PORT: 9000
+    healthcheck:
+      test: "curl --fail --silent http://localhost:9000/actuator/health/readiness | grep UP || exit 1"
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - 9000:9000
+    networks:
+      - compose-network
+
+  reactive-mongo:
+    container_name: reactive-mongo
+    image: reactive-mongo:latest
+    platform: linux/amd64
+    environment:
+      SPRING_APPLICATION_NAME: reactive-mongo
+      SERVER_PORT: 8083
+      SPRING_DATA_MONGODB_REPOSITORIES_TYPE: REACTIVE
+      SPRING_DATA_MONGODB_HOST: mymongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+      SPRING_DATA_MONGODB_DATABASE: sfg
+      SPRING_DATA_MONGODB_USERNAME: root
+      SPRING_DATA_MONGODB_PASSWORD: admin
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth-server:9000
+    depends_on:
+      mymongodb:
+        condition: service_healthy
+      auth-server:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8083/actuator/health/readiness | grep UP || exit 1"
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    ports:
+      - 8083:8083
+    networks:
+      - compose-network
+
+  reactive:
+    container_name: reactive
+    image: r2dbcapp:latest
+    platform: linux/amd64
+    environment:
+      SPRING_APPLICATION_NAME: reactive-r2dbcapp
+      SERVER_PORT: 8082
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth-server:9000
+    depends_on:
+      auth-server:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8082/actuator/health/readiness | grep UP || exit 1"
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    ports:
+      - 8082:8082
+    networks:
+      - compose-network
+
+  rest-mvc:
+    container_name: rest-mvc
+    image: spring-rest-demo:latest
+    platform: linux/amd64
+    environment:
+      SPRING_APPLICATION_NAME: spring-rest-demo
+      SERVER_PORT: 8081
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth-server:9000
+      SPRING_PROFILES_ACTIVE: localmysql
+    depends_on:
+      auth-server:
+        condition: service_healthy
+      mysqldb:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8081/actuator/health/readiness | grep UP || exit 1"
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    ports:
+      - 8081:8081
+    networks:
+      - compose-network
+      
+  mysqldb:
+    container_name: mysql
+    image: mysql:latest
+    platform: linux/arm64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: prateek
+      MYSQL_PASSWORD: root
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin  ping  -h  localhost --silent"]
+      interval: 20s
+      retries: 12
+      start_period: 30s
+      timeout: 120s
+    ports:
+      - 3306:3306  
+    networks:
+      - compose-network
+
+  mymongodb:
+    container_name: mongodb
+    platform: linux/arm64
+    image: mongo:6.0
+    restart: always
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mymongodb:27017/test --quiet
+      interval: 20s
+      timeout: 120s
+      start_period: 30s
+      retries: 12
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "8888:27017"
+    networks:
+      - compose-network
+
+  mongo-express:
+    image: mongo-express
+    platform: linux/arm64
+    restart: always
+    depends_on:
+      mymongodb:
+        condition: service_healthy
+    ports:
+      - 8085:8081
+    environment:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN  : true          
+      ME_CONFIG_MONGODB_PORT          : 27017           
+      ME_CONFIG_MONGODB_SERVER        : mymongodb
+      ME_CONFIG_MONGODB_ADMINUSERNAME : root
+      ME_CONFIG_MONGODB_ADMINPASSWORD : admin
+      ME_CONFIG_OPTIONS_EDITORTHEME   : 'ambience'       
+    networks:
+      - compose-network
+
+networks:
+  compose-network:
+    driver: bridge
+
