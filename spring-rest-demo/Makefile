@@ -54,6 +54,7 @@ test-rest:
 # this maven goal is configured in the parent pom
 image: 
 	mvn clean compile package spring-boot:build-image -DskipTests=true
+	docker build -t spring-rest-demo:latest .
 
 # Phony targets to avoid conflicts with files of the same name
 .PHONY: all clean compile test package install deploy test-mysql image

@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.prateek.reactive</groupId>
-	<artifactId>mongo</artifactId>
+	<artifactId>reactive-mongo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>mongo</name>
+	<name>reactive-mongo</name>
 	<description>Demo project for Spring Boot</description>
 	<url />
 	<licenses>
