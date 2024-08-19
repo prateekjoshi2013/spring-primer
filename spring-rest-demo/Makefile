@@ -50,5 +50,10 @@ verify-gen: clean test verify
 test-rest:
 	mvn clean compile test -Dspring.profiles.active=test
 
+# creates an oci image with name: docker.io/library/spring-rest-demo:0.0.1-SNAPSHOT
+# this maven goal is configured in the parent pom
+image: 
+	mvn clean compile package spring-boot:build-image -DskipTests=true
+
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: all clean compile test package install deploy test-mysql
+.PHONY: all clean compile test package install deploy test-mysql image
