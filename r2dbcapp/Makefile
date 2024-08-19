@@ -37,5 +37,10 @@ run:
 # cleans compiles tests and generates swagger doc
 verify: clean test verify
 
+# creates an oci image with name: docker.io/library/r2dbcapp:0.0.1-SNAPSHOT
+# this maven goal is configured in the parent pom
+image: 
+	mvn clean compile package spring-boot:build-image -DskipTests=true
+
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: all clean compile test package install deploy run
+.PHONY: all clean compile test package install deploy run image
