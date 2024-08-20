@@ -25,22 +25,9 @@ install:
 deploy:
 	mvn deploy
 
-# Rule to run verify phase which generates swagger/openapi spec
-# verify step does not run compile step so run it after compile
-verify:
-	mvn verify -Dspring.profiles.active=default 
-
 # Rule to start spring boot app with mysql
 run:
 	mvn clean compile test spring-boot:run -Dspring-boot.run.profiles=default
 
-# cleans compiles tests and generates swagger doc
-verify: clean test verify
-
-# creates an oci image with name: docker.io/library/r2dbcapp:0.0.1-SNAPSHOT
-# this maven goal is configured in the parent pom
-image: 
-	mvn clean compile package spring-boot:build-image -DskipTests=true
-	docker build -t r2dbcapp:latest .
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: all clean compile test package install deploy run image
+.PHONY: all clean compile test package install deploy run
