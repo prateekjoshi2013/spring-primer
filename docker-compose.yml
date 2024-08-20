@@ -2,7 +2,7 @@ services:
   gateway:
     container_name: gateway
     image: gateway:latest
-    platform: linux/amd64
+    # platform: linux/arm64
     environment:
       SPRING_APPLICATION_NAME: gateway
       SERVER_PORT: 8080
@@ -30,7 +30,7 @@ services:
   auth-server:
     container_name: auth-server
     image: auth.server:latest
-    platform: linux/amd64
+    # platform: linux/amd64
     environment:
       SPRING_APPLICATION_NAME: auth-server
       SERVER_PORT: 9000
@@ -48,7 +48,7 @@ services:
   reactive-mongo:
     container_name: reactive-mongo
     image: reactive-mongo:latest
-    platform: linux/amd64
+    # platform: linux/amd64
     environment:
       SPRING_APPLICATION_NAME: reactive-mongo
       SERVER_PORT: 8083
@@ -79,7 +79,7 @@ services:
   reactive:
     container_name: reactive
     image: r2dbcapp:latest
-    platform: linux/amd64
+    # platform: linux/amd64
     environment:
       SPRING_APPLICATION_NAME: reactive-r2dbcapp
       SERVER_PORT: 8082
@@ -101,7 +101,7 @@ services:
   rest-mvc:
     container_name: rest-mvc
     image: spring-rest-demo:latest
-    platform: linux/amd64
+    # platform: linux/amd64
     environment:
       SPRING_APPLICATION_NAME: spring-rest-demo
       SERVER_PORT: 8081
@@ -125,8 +125,8 @@ services:
       
   mysqldb:
     container_name: mysql
-    image: mysql:latest
-    platform: linux/arm64
+    image: mysql:oraclelinux9
+    # platform: linux/arm64
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: mydb
@@ -145,7 +145,7 @@ services:
 
   mymongodb:
     container_name: mongodb
-    platform: linux/arm64
+    # platform: linux/arm64
     image: mongo:6.0
     restart: always
     healthcheck:
@@ -164,7 +164,7 @@ services:
 
   mongo-express:
     image: mongo-express
-    platform: linux/arm64
+    # platform: linux/arm64
     restart: always
     depends_on:
       mymongodb:
