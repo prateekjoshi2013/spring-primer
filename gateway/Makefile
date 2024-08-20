@@ -3,5 +3,6 @@
 # this maven goal is configured in the parent pom
 image: 
 	mvn clean compile package spring-boot:build-image -DskipTests=true
+	docker build -t gateway:latest .
 
 .PHONY: image	
