@@ -31,6 +31,8 @@
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.6.0.RC1</org.mapstruct.version>
 		<lombok.version>1.18.32</lombok.version>
+		<logbook.version>3.9.0</logbook.version>
+		<logstash.logback.encoder.version>8.0</logstash.logback.encoder.version>
 	</properties>
 	<dependencies>
 		<!-- spring boot web dependency for web apps 
@@ -127,6 +129,55 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
+		<!-- swagger/openapi spec/doc gen dependencies refer:
+		https://springdoc.org/#migrating-from-springdoc-v1 -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<!-- needed for spring security features -->
+			<artifactId>springdoc-openapi-starter-common</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<!-- needed for spring web mvc  -->
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<!-- rest assured dependency with swagger request validator -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.oai</groupId>
+			<artifactId>swagger-request-validator-restassured</artifactId>
+			<version>2.41.0</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- enabling actuator endpoint -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- enabling logbook request response tracing -->
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>logbook-spring-boot-starter</artifactId>
+			<version>${logbook.version}</version>
+		</dependency>
+		<!-- encodes the spring logback logs in json format -->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>${logstash.logback.encoder.version}</version>
+		</dependency>
+		<!-- enabling logbook logstash compatibility (makes logbook logs also in json encoding) -->
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>logbook-logstash</artifactId>
+			<version>${logbook.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -155,7 +206,24 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>springdoc</id>
+						<goals>
+							<goal>start</goal>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>build-info</id>
+						<!-- this generates build info in target folder automatically -->
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
+					<jvmArguments>-Dspring.applicaiton.admin.enabled=true</jvmArguments>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
@@ -163,6 +231,22 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<apiDocsUrl>http://localhost:8081/v3/api-docs</apiDocsUrl>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

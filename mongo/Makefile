@@ -32,19 +32,20 @@ verify:
 
 
 # Rule to test with mysql
-test-mysql:
-	mvn test -Dspring.profiles.active=localmysql
-
-# Rule to start spring boot app with mysql
-run-mysql:
-	mvn spring-boot:run -Dspring-boot.run.profiles=localmysql
-
-# cleans compiles tests and generates swagger doc
-verify-gen: clean test verify
+test-mongo:
+	mvn clean compile test -Dspring.profiles.active=test
 
 # run the rest assured tests with test profile
 test-rest:
-	mvn clean compile test -Dspring.profiles.active=test
+	mvn clean compile test -Dspring.profiles.active=default
+
+# Rule to start spring boot app with mysql
+run:
+	mvn clean compile spring-boot:run -Dspring-boot.run.profiles=default
+
+
+test-all: test-rest test-mongo
+
 
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: all clean compile test package install deploy test-mysql
+.PHONY: all clean compile test package install deploy test-rest test-all test-mongo

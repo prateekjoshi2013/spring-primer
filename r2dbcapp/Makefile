@@ -30,21 +30,12 @@ deploy:
 verify:
 	mvn verify -Dspring.profiles.active=default 
 
-
-# Rule to test with mysql
-test-mysql:
-	mvn test -Dspring.profiles.active=localmysql
-
 # Rule to start spring boot app with mysql
-run-mysql:
-	mvn spring-boot:run -Dspring-boot.run.profiles=localmysql
+run:
+	mvn clean compile test spring-boot:run -Dspring-boot.run.profiles=default
 
 # cleans compiles tests and generates swagger doc
-verify-gen: clean test verify
-
-# run the rest assured tests with test profile
-test-rest:
-	mvn clean compile test -Dspring.profiles.active=test
+verify: clean test verify
 
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: all clean compile test package install deploy test-mysql
+.PHONY: all clean compile test package install deploy run

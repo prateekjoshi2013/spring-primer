@@ -7,6 +7,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -39,8 +40,18 @@ import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 public class SecurityConfig {
+
         @Bean
         @Order(1)
+        SecurityFilterChain actuatoSecurityFilterChain(HttpSecurity http) throws Exception {
+                http.securityMatcher(EndpointRequest.toAnyEndpoint())
+                                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+
+                return http.build();
+        }
+
+        @Bean
+        @Order(2)
         public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
                 OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
                 http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
@@ -60,7 +71,7 @@ public class SecurityConfig {
         }
 
         @Bean
-        @Order(2)
+        @Order(3)
         public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
                         throws Exception {
                 http

@@ -1,5 +1,4 @@
-package com.prateek.reactive.mongo.config;
-
+package com.example.gateway.config;
 
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +12,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+
     @Bean
     @Order(1)
     SecurityWebFilterChain actuatorSecurityFilterChain(ServerHttpSecurity http) throws Exception {
@@ -23,7 +23,7 @@ public class SecurityConfig {
 
     @Order(2)
     @Bean
-    SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().authenticated())
                 .oauth2ResourceServer(
@@ -31,6 +31,5 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
 
         return http.build();
-
     }
 }
